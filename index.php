@@ -2,7 +2,7 @@
 <script src="./js/jquery.js"></script>
 <link rel="stylesheet" href="./css/style.css">
 <div class="container">
-    <div class="card" id="chat-box">
+    <div class="card" id="chatbox">
 
     </div>
     <input id="textbox" type="text">

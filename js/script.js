@@ -1,4 +1,6 @@
 var socket = new WebSocket("ws:ws-chat.test/ws/");
+var textbox = $('#textbox');
+var chatbox = $('#chatbox');
 
 socket.onopen = function () {
     console.log("Соединение установлено.");
@@ -19,7 +21,7 @@ socket.onmessage = function (event) {
     data = JSON.parse(event.data);
     if (data.messages !== undefined) {
         data.messages.forEach(function (data) {
-            $('#chat-box').append(data.fd + ". " + data.message + "<br>");
+            chatbox.append(data.fd + ". " + data.message + "<br>");
         })
     }
 };
@@ -29,5 +31,6 @@ socket.onerror = function (error) {
 };
 
 function send() {
-    socket.send($('#textbox').val());
+    socket.send(textbox.val());
+    textbox.val('');
 }
