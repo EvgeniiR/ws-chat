@@ -1,6 +1,4 @@
-var socket = new WebSocket("ws:ws-chat.test/ws/");
-var textbox = $('#textbox');
-var chatbox = $('#chatbox');
+var socket = new WebSocket("ws:my_token@ws-chat.test/ws/");
 
 socket.onopen = function () {
     console.log("Соединение установлено.");
@@ -17,20 +15,90 @@ socket.onclose = function (event) {
 };
 
 socket.onmessage = function (event) {
-    console.log(event.data);
-    data = JSON.parse(event.data);
-    if (data.messages !== undefined) {
-        data.messages.forEach(function (data) {
-            chatbox.append(data.fd + ". " + data.message + "<br>");
-        })
-    }
+    console.log(event);
+    parseData(JSON.parse(event.data));
 };
 
 socket.onerror = function (error) {
     console.log("Ошибка " + error.message);
 };
 
-function send() {
-    socket.send(textbox.val());
-    textbox.val('');
+class socketClient {
+    constructor() {
+        this.queryFields = {};
+    }
+
+    setField(key, value) {
+        this.queryFields[key] = value;
+    }
+
+    login() {
+        let username = undefined;
+
+        username = prompt('Введите ваше имя', 'new user');
+
+        if (username === undefined) return false;
+
+        this.setField('type', 'login');
+        this.setField('username', username);
+
+        socket.send(JSON.stringify(this.queryFields));
+    }
+
+    send() {
+        if (authenticated) {
+            socket.send(JSON.stringify(this.queryFields));
+            return true;
+        }
+        else {
+            this.login();
+            return false;
+        }
+    }
 }
+
+function isEmpty(str) {
+    if (str === undefined) return true;
+    if (str === null) return true;
+    return str.trim() == '';
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function send() {
+    client.setField('type', 'message');
+    client.setField('message', textbox.val());
+    result = client.send();
+
+    if (result)
+        textbox.val('');
+}
+
+function getMessages(data) {
+    if (data.messages !== undefined) {
+        data.messages.forEach(function (data) {
+            chatbox.append(data.username + ". " + data.message + "<br>");
+        })
+    }
+}
+
+function parseData(data) {
+    switch (data.type) {
+        case 'login':
+            if (data.login_result == true)
+                authenticated = true
+            break;
+        case 'messages':
+            getMessages(data);
+            break;
+    }
+}
+
+var textbox = $('#textbox');
+var chatbox = $('#chatbox');
+let client = new socketClient();
+let authenticated = false;
+
+client.login();
