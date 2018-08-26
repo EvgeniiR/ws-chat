@@ -89,6 +89,9 @@ function parseData(data) {
         case 'login':
             if (data.login_result == true)
                 authenticated = true
+            else {
+                alert('authentication failed: ' + data.message + '. Try to refresh the page.')
+            }
             break;
         case 'messages':
             getMessages(data);

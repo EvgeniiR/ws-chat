@@ -25,7 +25,7 @@ function getUsername($fd)
 function return_unauthorized($fd)
 {
     global $ws;
-    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false]));
+    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'message' => 'unauthorized']));
 }
 
 function addMessage($fd, $data)
@@ -33,6 +33,7 @@ function addMessage($fd, $data)
     $username = getUsername($fd);
     if ($username == false) {
         return_unauthorized($fd);
+        return;
     }
 
     global $messages_table;
@@ -51,13 +52,16 @@ function addMessage($fd, $data)
     }
 }
 
-function login(int $fd, string $username)
+function login(int $fd, $username)
 {
+    global $ws;
+    if(empty($username)) {
+        $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'message' => 'username cannot be empty']));
+    }
     global $users_table;
     $row = ['fd' => $fd, 'username' => $username];
     $users_table->set($fd, $row);
 
-    global $ws;
     $ws->push($fd, json_encode(['type' => 'login', 'login_result' => true]));
 }
 
