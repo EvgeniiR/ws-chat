@@ -15,12 +15,26 @@ $global_channel = new swoole_channel(1000);
 function getUsername($fd)
 {
     global $users_table;
-    return $users_table->get($fd, 'username');
+    $username = $users_table->get($fd, 'username');
+    if ($username != false) {
+        return $username;
+    }
+    return false;
+}
+
+function return_unauthorized($fd)
+{
+    global $ws;
+    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false]));
 }
 
 function addMessage($fd, $data)
 {
     $username = getUsername($fd);
+    if ($username == false) {
+        return_unauthorized($fd);
+    }
+
     global $messages_table;
     $count = count($messages_table);
     $row = ['username' => $username, 'message' => $data->message];
