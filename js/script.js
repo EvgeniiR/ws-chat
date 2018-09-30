@@ -1,4 +1,5 @@
-var socket = new WebSocket("ws:my_token@ws-chat.test/ws/");
+var host = window.location.host;
+var socket = new WebSocket("ws:my_token@" + host + "/ws/");
 
 socket.onopen = function () {
     console.log("Соединение установлено.");
