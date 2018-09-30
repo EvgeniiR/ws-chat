@@ -1,5 +1,5 @@
 <?php
-namespace Co\Websocket;
+namespace Swoole\WebSocket;
 
 /**
  * @since 4.0.1

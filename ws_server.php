@@ -41,7 +41,7 @@ function addMessage($fd, $data)
     $row = ['username' => $username, 'message' => $data->message];
     $messages_table->set($count, $row);
 
-    $messages[] = ['username' => $username, 'message' => $data->message];
+    $messages[] = $messages_table[$count];
 
     global $global_channel;
     $fds = $global_channel->peek() ?? [];
