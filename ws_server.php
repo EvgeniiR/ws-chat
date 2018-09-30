@@ -55,11 +55,27 @@ function addMessage($fd, $data)
 function login(int $fd, $username)
 {
     global $ws;
-    if(empty($username)) {
+    if (empty($username)) {
         $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'message' => 'username cannot be empty']));
     }
     global $users_table;
     $row = ['fd' => $fd, 'username' => $username];
+
+    foreach ($users_table as $user) {
+        if ($user['username'] == $username) {
+            $user_with_some_nick_fd = $user['fd'];
+            global $global_channel;
+            $fds = $global_channel->peek();
+            if (($key = array_search($user_with_some_nick_fd, $fds)) !== FALSE) {
+                var_dump($fds[$key]);
+                var_dump($fd);
+                if($fds[$key] !== $fd) {
+                    var_dump('NO!!!');
+                }
+            }
+        }
+    }
+
     $users_table->set($fd, $row);
 
     $ws->push($fd, json_encode(['type' => 'login', 'login_result' => true]));
