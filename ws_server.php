@@ -39,7 +39,7 @@ function addMessage($fd, $data)
     global $messages_table;
     $count = count($messages_table);
     $row = ['username' => $username, 'message' => $data->message];
-    $messages_table->set($count + 1, $row);
+    $messages_table->set($count, $row);
 
     $messages[] = ['username' => $username, 'message' => $data->message];
 
