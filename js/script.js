@@ -3,6 +3,7 @@ var socket = new WebSocket("ws:my_token@" + host + "/ws/");
 
 socket.onopen = function () {
     console.log("Соединение установлено.");
+    client.login();
 };
 
 socket.onclose = function (event) {
@@ -80,7 +81,7 @@ function send() {
 function getMessages(data) {
     if (data.messages !== undefined) {
         data.messages.forEach(function (data) {
-            chatbox.append(data.username + ". " + data.message + "<br>");
+            chatbox.append(data.value.username + ". " + data.value.message + "<br>");
         })
     }
 }
@@ -104,5 +105,3 @@ var textbox = $('#textbox');
 var chatbox = $('#chatbox');
 let client = new socketClient();
 let authenticated = false;
-
-client.login();
