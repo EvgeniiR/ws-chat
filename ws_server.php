@@ -73,8 +73,9 @@ $ws->on('open', function ($ws, $request) {
 
     global $messages_table;
     $messages = [];
-    foreach ($messages_table as $row) {
-        $messages[] = $row;
+    $count = count($messages_table);
+    for ($i = 0; $i < $count; $i++) {
+        $messages[] = $messages_table[$i];
     }
 
     $ws->push($request->fd, json_encode(['type' => 'messages', 'messages' => $messages]));
