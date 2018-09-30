@@ -74,7 +74,7 @@ $ws->on('open', function ($ws, $request) {
     global $messages_table;
     $messages = [];
     $count = count($messages_table);
-    for ($i = 0; $i < $count; $i++) {
+    for ($i = 1; $i <= $count; $i++) {
         $messages[] = $messages_table[$i];
     }
 
