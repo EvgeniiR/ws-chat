@@ -67,10 +67,8 @@ function login(int $fd, $username)
             global $global_channel;
             $fds = $global_channel->peek();
             if (($key = array_search($user_with_some_nick_fd, $fds)) !== FALSE) {
-                var_dump($fds[$key]);
-                var_dump($fd);
                 if($fds[$key] !== $fd) {
-                    var_dump('NO!!!');
+                    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'value' => 'Choose another name']));
                 }
             }
         }
