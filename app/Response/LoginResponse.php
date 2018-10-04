@@ -22,10 +22,10 @@ class LoginResponse extends Response
 
 	protected function getBody()
 	{
-		if ($this->message) {
-			$body = ['result' => $this->result];
+		if ($this->message != null) {
+            $body = ['result' => $this->result, 'message' => $this->message];
 		} else {
-			$body = ['result' => $this->result, 'message' => $this->message];
+            $body = ['result' => $this->result];
 		}
 		return $body;
 	}

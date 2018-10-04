@@ -35,7 +35,7 @@ class socketClient {
     }
 
     login() {
-        let username = undefined;
+        var username;
 
         username = prompt('Введите ваше имя', 'new user');
 
@@ -78,10 +78,10 @@ function send() {
         textbox.val('');
 }
 
-function getMessages(data) {
-    if (data.messages !== undefined) {
-        data.messages.forEach(function (data) {
-            chatbox.append(data.value.username + ". " + data.value.message + "<br>");
+function getMessages(body) {
+    if (body.messages !== undefined) {
+        body.messages.forEach(function (data) {
+            chatbox.append(data.dateTime + ":" + data.username + ". " + data.message + "<br>");
         })
     }
 }
@@ -89,14 +89,14 @@ function getMessages(data) {
 function parseData(data) {
     switch (data.type) {
         case 'login':
-            if (data.login_result == true)
-                authenticated = true
+            if (data.body.result === true)
+                authenticated = true;
             else {
-                alert('authentication failed: ' + data.message + '. Try to refresh the page.')
+                alert('authentication failed: ' + data.body.message + '. Try to refresh the page.');
             }
             break;
         case 'messages':
-            getMessages(data);
+            getMessages(data.body);
             break;
     }
 }

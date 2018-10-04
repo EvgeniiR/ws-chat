@@ -14,11 +14,12 @@ class MessagesReponse extends Response
 
 	protected function getBody()
 	{
-		return $this->messages;
+		return ['messages' => $this->messages];
 	}
 
 	public function addMessage(string $username, string $message)
 	{
 		$this->messages[] = ['username' => $username, 'message' => $message, 'dateTime' => ChatHelper::currentTime()];
+		return $this;
 	}
 }

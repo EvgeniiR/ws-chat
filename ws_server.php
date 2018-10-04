@@ -1,4 +1,11 @@
 <?php
+
+use App\Response\ErrorResponse;
+use App\Response\LoginResponse;
+use App\Response\MessagesReponse;
+
+require_once('./vendor/autoload.php');
+
 $ws = new swoole_websocket_server('0.0.0.0', 9502);
 $messages_table = new swoole_table(5000);
 $messages_table->column('username', swoole_table::TYPE_STRING, 100);
@@ -25,7 +32,7 @@ function getUsername($fd)
 function return_unauthorized($fd)
 {
     global $ws;
-    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'message' => 'unauthorized']));
+    $ws->push($fd, (new ErrorResponse('Unauthorized!'))->getJson());
 }
 
 function addMessage($fd, $data)
@@ -41,14 +48,12 @@ function addMessage($fd, $data)
     $row = ['username' => $username, 'message' => $data->message];
     $messages_table->set($count, $row);
 
-    $messages[] = $messages_table[$count];
-
     global $global_channel;
     $fds = $global_channel->peek() ?? [];
-
+    $response = (new MessagesReponse())->addMessage($username, $data->message)->getJson();
     global $ws;
     foreach ($fds as $fd) {
-        $ws->push($fd, json_encode(['type' => 'messages', 'messages' => $messages]));
+        $ws->push($fd, $response);
     }
 }
 
@@ -56,7 +61,7 @@ function login(int $fd, $username)
 {
     global $ws;
     if (empty($username)) {
-        $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'message' => 'username cannot be empty']));
+        $ws->push($fd, (new LoginResponse(false, 'username cannot be empty'))->getJson());
     }
     global $users_table;
     $row = ['fd' => $fd, 'username' => $username];
@@ -68,7 +73,8 @@ function login(int $fd, $username)
             $fds = $global_channel->peek();
             if (($key = array_search($user_with_some_nick_fd, $fds)) !== FALSE) {
                 if($fds[$key] !== $fd) {
-                    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => false, 'value' => 'Choose another name']));
+                    $ws->push($fd, (new LoginResponse(false, 'Choose another name!'))->getJson());
+                    return;
                 }
             }
         }
@@ -76,7 +82,7 @@ function login(int $fd, $username)
 
     $users_table->set($fd, $row);
 
-    $ws->push($fd, json_encode(['type' => 'login', 'login_result' => true]));
+    $ws->push($fd, (new LoginResponse(true))->getJson());
 }
 
 $ws->on('open', function ($ws, $request) {
@@ -86,13 +92,14 @@ $ws->on('open', function ($ws, $request) {
     $global_channel->push($fds);
 
     global $messages_table;
-    $messages = [];
+    $messagesResponse = new MessagesReponse();
     $count = count($messages_table);
     for ($i = 0; $i < $count; $i++) {
-        $messages[] = $messages_table[$i];
+        $username = $messages_table[$i]->value['username'];
+        $message = $messages_table[$i]->value['message'];
+        $messagesResponse->addMessage($username, $message);
     }
-
-    $ws->push($request->fd, json_encode(['type' => 'messages', 'messages' => $messages]));
+    $ws->push($request->fd, $messagesResponse->getJson());
 
     echo "client-{$request->fd} is connected\n";
 });
