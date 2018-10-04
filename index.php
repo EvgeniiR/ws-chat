@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="css/style.css">
+<script src="./js/helpers.js"></script>
 <script src="./js/jquery.js"></script>
 <link rel="stylesheet" href="./css/style.css">
 <div class="container">

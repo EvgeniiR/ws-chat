@@ -81,7 +81,7 @@ function send() {
 function getMessages(body) {
     if (body.messages !== undefined) {
         body.messages.forEach(function (data) {
-            chatbox.append(data.dateTime + ":" + data.username + ". " + data.message + "<br>");
+            chatbox.append(formatTimestamp(data.dateTime) + ":" + data.username + ". " + data.message + "<br>");
         })
     }
 }
