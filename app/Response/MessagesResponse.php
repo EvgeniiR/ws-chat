@@ -3,7 +3,7 @@
 namespace App\Response;
 
 
-class MessagesReponse extends Response
+class MessagesResponse extends Response
 {
 	private $messages = [];
 
