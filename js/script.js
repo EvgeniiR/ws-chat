@@ -1,6 +1,8 @@
 var host = window.location.host;
 var socket = new WebSocket("ws:my_token@" + host + "/ws/");
 
+socket.keepalive = true;
+
 socket.onopen = function () {
     console.log("Соединение установлено.");
     client.login();
