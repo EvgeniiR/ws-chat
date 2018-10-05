@@ -19,7 +19,7 @@ class MessagesResponse extends Response
 
 	public function addMessage(string $username, string $message)
 	{
-		$this->messages[] = ['username' => $username, 'message' => $message, 'dateTime' => ChatHelper::currentTime()];
+		$this->messages[] = ['username' => $username, 'message' => $message, 'dateTime' => ResponseHelper::currentTime()];
 		return $this;
 	}
 }

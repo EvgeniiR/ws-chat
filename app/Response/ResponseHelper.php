@@ -3,7 +3,7 @@
 namespace App\Response;
 
 
-class ChatHelper
+class ResponseHelper
 {
 	public static function currentTime()
 	{

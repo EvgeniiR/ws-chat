@@ -1,7 +1,8 @@
 {
     "name": "root/ws-chat",
     "require": {
-      "ext-json": "*"
+      "ext-json": "*",
+        "ezyang/htmlpurifier": "^4.10"
     },
     "autoload": {
         "psr-4": {
