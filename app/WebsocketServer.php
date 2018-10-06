@@ -111,10 +111,12 @@ class WebsocketServer
      */
     private function onClose(int $id)
     {
-        $Ids = $this->global_channel->pop() ?? [];
-        if (($key = array_search($id, $Ids)) !== FALSE) {
-            unset($Ids[$key]);
+        if ($Ids = $this->global_channel->pop()) {
+            if (($key = array_search($id, $Ids)) !== FALSE) {
+                unset($Ids[$key]);
+            }
         }
+
         $this->global_channel->push($Ids);
 
         echo "client-{$id} is closed\n";
