@@ -54,17 +54,7 @@ class WebsocketServer
 
         $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
 
-        $this->messages_table = new swoole_table(5000);
-        $this->messages_table->column('username', swoole_table::TYPE_STRING, 100);
-        $this->messages_table->column('message', swoole_table::TYPE_STRING, 250);
-        $this->messages_table->column('date_time', swoole_table::TYPE_INT, 10);
-        $this->messages_table->create();
-
-        $this->users_table = new swoole_table(5000);
-        $this->users_table->column('id', swoole_table::TYPE_INT, 5);
-        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
-        $this->users_table->create();
-        $this->global_channel = new swoole_channel(1000);
+        $this->initTables();
 
         $this->ws->on('open', function ($ws, $request) {
             $this->onConnection($request);
@@ -109,7 +99,7 @@ class WebsocketServer
         $data = json_decode($frame->data);
         switch ($data->type) {
             case 'login':
-                $this->login($frame->fd, $data->username);
+                $this->registerNewUser($frame->fd, $data->username);
                 break;
             case 'message':
                 $this->addMessage($frame->fd, $data);
@@ -182,26 +172,39 @@ class WebsocketServer
      * @param int $id
      * @param string $username
      */
-    private function login(int $id, string $username = '')
+    private function registerNewUser(int $id, string $username = "")
     {
         if (empty($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
         }
         $row = ['id' => $id, 'username' => $username];
 
-        foreach ($this->users_table as $user) {
-            if ($user['username'] == $username) {
-                $currentUserWithSomeNickId = $user['id'];
-                if ($this->isUserOnline($currentUserWithSomeNickId)) {
-                    $this->ws->push($id, (new LoginResponse(false, 'Choose another name!'))->getJson());
-                    return;
-                }
-            }
+        if($this->isUsernameCurrentlyTaken($username))
+        {
+            $this->ws->push($id, (new LoginResponse(false, 'Choose another name!'))->getJson());
         }
 
         $this->users_table->set($id, $row);
 
         $this->ws->push($id, (new LoginResponse(true))->getJson());
+    }
+
+    /**
+     * Check if there are online users with some username
+     * @param string $username
+     * @return bool
+     */
+    private function isUsernameCurrentlyTaken(string $username)
+    {
+        foreach ($this->users_table as $user) {
+            if ($user['username'] == $username) {
+                $currentUserWithSomeNickId = $user['id'];
+                if ($this->isUserOnline($currentUserWithSomeNickId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -213,5 +216,20 @@ class WebsocketServer
     {
         $idsList = $this->global_channel->peek();
         return (($key = array_search($id, $idsList)) !== false);
+    }
+
+    public function initTables()
+    {
+        $this->messages_table = new swoole_table(5000);
+        $this->messages_table->column('username', swoole_table::TYPE_STRING, 100);
+        $this->messages_table->column('message', swoole_table::TYPE_STRING, 250);
+        $this->messages_table->column('date_time', swoole_table::TYPE_INT, 10);
+        $this->messages_table->create();
+
+        $this->users_table = new swoole_table(5000);
+        $this->users_table->column('id', swoole_table::TYPE_INT, 5);
+        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
+        $this->users_table->create();
+        $this->global_channel = new swoole_channel(1000);
     }
 }

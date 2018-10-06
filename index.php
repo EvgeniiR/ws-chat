@@ -5,7 +5,7 @@
     <div class="card" id="chatbox">
 
     </div>
-    <input id="textbox" type="text">
+    <textarea id="textbox"></textarea>
     <button class="btn-send" onclick="send()">Отправить</button>
 </div>
 <script src="./js/helpers.js"></script>
