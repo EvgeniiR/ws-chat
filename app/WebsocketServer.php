@@ -57,6 +57,7 @@ class WebsocketServer
         $this->messages_table = new swoole_table(5000);
         $this->messages_table->column('username', swoole_table::TYPE_STRING, 100);
         $this->messages_table->column('message', swoole_table::TYPE_STRING, 250);
+        $this->messages_table->column('date_time', swoole_table::TYPE_INT, 10);
         $this->messages_table->create();
 
         $this->users_table = new swoole_table(5000);
@@ -65,9 +66,15 @@ class WebsocketServer
         $this->users_table->create();
         $this->global_channel = new swoole_channel(1000);
 
-        $this->ws->on('open', function ($ws, $request) { $this->onConnection($request); });
-        $this->ws->on('message', function ($ws, $frame) { $this->onMessage($frame); });
-        $this->ws->on('close', function ($ws, $id) { $this->onClose($id); });
+        $this->ws->on('open', function ($ws, $request) {
+            $this->onConnection($request);
+        });
+        $this->ws->on('message', function ($ws, $frame) {
+            $this->onMessage($frame);
+        });
+        $this->ws->on('close', function ($ws, $id) {
+            $this->onClose($id);
+        });
         $this->ws->start();
     }
 
@@ -86,7 +93,8 @@ class WebsocketServer
         for ($i = 0; $i < $count; $i++) {
             $username = $this->messages_table[$i]->value['username'];
             $message = $this->messages_table[$i]->value['message'];
-            $messagesResponse->addMessage($username, $message);
+            $dateTIme = $this->messages_table[$i]->value['date_time'];
+            $messagesResponse->addMessage($username, $message, $dateTIme);
         }
         $this->ws->push($request->fd, $messagesResponse->getJson());
 
@@ -157,13 +165,14 @@ class WebsocketServer
 
         $count = count($this->messages_table);
 
-        $message = $this->purifier->purify($data->message);
-
-        $row = ['username' => $username, 'message' => $message];
+        $dateTime = time();
+        $row = ['username' => $username, 'message' => $data->message, 'date_time' => $dateTime];
         $this->messages_table->set($count, $row);
 
+        $purifiedMessage = $this->purifier->purify($data->message);
+
         $Ids = $this->global_channel->peek() ?? [];
-        $response = (new MessagesResponse())->addMessage($username, $message)->getJson();
+        $response = (new MessagesResponse())->addMessage($username, $purifiedMessage, $dateTime)->getJson();
         foreach ($Ids as $id) {
             $this->ws->push($id, $response);
         }
@@ -203,6 +212,6 @@ class WebsocketServer
     private function isUserOnline(int $id)
     {
         $idsList = $this->global_channel->peek();
-        return ( ($key = array_search($id, $idsList)) !== false );
+        return (($key = array_search($id, $idsList)) !== false);
     }
 }
