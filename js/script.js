@@ -90,15 +90,19 @@ function getMessages(body) {
 
 function addMessage(dateTime, username, text) {
     chatbox.append(dateTime + ":" + username + ". " + text + "<br>");
+    scrollChatboxDownIfUserWasAtTheBottom();
+}
 
+function scrollChatboxDownIfUserWasAtTheBottom() {
     scrollHeight = chatbox.scrollHeight;
-    currentScroll = chatbox.scrollTop;
+    currentScrollPosition = chatbox.scrollTop;
     offsetHeight = chatbox.offsetHeight;
 
-    userScrollMaxValue = scrollHeight = offsetHeight;
+    userScrollMaxValue = scrollHeight - offsetHeight;
 
-    if ((currentScroll / scrollHeight) > 0.8) {
-        chatbox.scrollTop = scrollHeight;
+    let scrollProportion = (currentScrollPosition / userScrollMaxValue);
+    if (scrollProportion > 0.8 || scrollProportion === 0) {
+        chatbox.scrollTop = userScrollMaxValue;
     }
 }
 
