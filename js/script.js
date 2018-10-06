@@ -89,7 +89,8 @@ function getMessages(body) {
 }
 
 function addMessage(dateTime, username, text) {
-    chatbox.append(dateTime + ":" + username + ". " + text + "<br>");
+    chatbox.append(dateTime + ":" + username + ". " + text);
+    chatbox.appendChild(document.createElement("br"));
     scrollChatboxDownIfUserWasAtTheBottom();
 }
 

@@ -1,9 +1,14 @@
-.container {
-    margin: 0 auto;
-    width: 400px;
-}
-
 #chatbox{
     overflow-y: scroll;
-    height: 80%;
+    height: 80vh;
+}
+
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container{
+    min-width: 640px !important;
 }
