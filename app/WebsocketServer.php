@@ -172,7 +172,7 @@ class WebsocketServer
      * @param int $id
      * @param string $username
      */
-    private function registerNewUser(int $id, string $username = "")
+    private function registerNewUser(int $id, $username)
     {
         if (empty($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
