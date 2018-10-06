@@ -83,8 +83,22 @@ function send() {
 function getMessages(body) {
     if (body.messages !== undefined) {
         body.messages.forEach(function (data) {
-            chatbox.append(formatTimestamp(data.dateTime) + ":" + data.username + ". " + data.message + "<br>");
+            addMessage(formatTimestamp(data.dateTime), data.username, data.message)
         })
+    }
+}
+
+function addMessage(dateTime, username, text) {
+    chatbox.append(dateTime + ":" + username + ". " + text + "<br>");
+
+    scrollHeight = chatbox.scrollHeight;
+    currentScroll = chatbox.scrollTop;
+    offsetHeight = chatbox.offsetHeight;
+
+    userScrollMaxValue = scrollHeight = offsetHeight;
+
+    if ((currentScroll / scrollHeight) > 0.8) {
+        chatbox.scrollTop = scrollHeight;
     }
 }
 
@@ -104,6 +118,6 @@ function parseData(data) {
 }
 
 var textbox = $('#textbox');
-var chatbox = $('#chatbox');
+var chatbox = document.getElementById("chatbox");
 let client = new socketClient();
 let authenticated = false;
