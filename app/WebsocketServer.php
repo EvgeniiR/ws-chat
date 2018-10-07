@@ -78,10 +78,7 @@ class WebsocketServer
      */
     public function onStart()
     {
-        swoole_timer_after(5000,
-            function () {
-                $this->sendPing();
-            });
+
     }
 
     /**
@@ -250,5 +247,15 @@ class WebsocketServer
         $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
         $this->users_table->create();
         $this->global_channel = new swoole_channel(1000);
+    }
+
+    public function sendPing()
+    {
+        $timestamp = time();
+        $ids = $this->global_channel->peek();
+        if (!$ids) return;
+        foreach ($ids as $userId) {
+            $this->ws->push($userId, $timestamp, WEBSOCKET_OPCODE_PING);
+        }
     }
 }
