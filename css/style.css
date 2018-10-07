@@ -9,6 +9,6 @@
     margin-right: auto;
 }
 
-.container{
-    min-width: 640px !important;
+.container-fluid{
+    max-width: 1080px;
 }
