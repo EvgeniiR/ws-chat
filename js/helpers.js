@@ -1,5 +1,5 @@
 function formatTimestamp(timestamp) {
-    var date = new Date(1538611712 * 1000);
+    var date = new Date(timestamp * 1000);
     day = date.getDate();
     month = date.toLocaleString('ru', {month: "short"});
     hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
