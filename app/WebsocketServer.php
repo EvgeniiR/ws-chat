@@ -65,7 +65,23 @@ class WebsocketServer
         $this->ws->on('close', function ($ws, $id) {
             $this->onClose($id);
         });
+
+        $this->ws->on('start', function () {
+            $this->onStart();
+        });
+
         $this->ws->start();
+    }
+
+    /**
+     * Server started
+     */
+    public function onStart()
+    {
+        swoole_timer_after(5000,
+            function () {
+                $this->sendPing();
+            });
     }
 
     /**
@@ -87,7 +103,6 @@ class WebsocketServer
             $messagesResponse->addMessage($username, $message, $dateTIme);
         }
         $this->ws->push($request->fd, $messagesResponse->getJson());
-
         echo "client-{$request->fd} is connected\n";
     }
 
@@ -96,6 +111,8 @@ class WebsocketServer
      */
     private function onMessage($frame)
     {
+        echo 'We recieve: ';
+        print_r($frame);
         $data = json_decode($frame->data);
         switch ($data->type) {
             case 'login':
@@ -178,11 +195,11 @@ class WebsocketServer
     {
         if (empty($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
+            return;
         }
         $row = ['id' => $id, 'username' => $username];
 
-        if($this->isUsernameCurrentlyTaken($username))
-        {
+        if ($this->isUsernameCurrentlyTaken($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'Choose another name!'))->getJson());
         }
 
