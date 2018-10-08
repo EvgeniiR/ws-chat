@@ -8,7 +8,6 @@ use App\Response\MessagesResponse;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use Swoole\Http\Request;
-use swoole_channel;
 use swoole_table;
 use swoole_websocket_server;
 
@@ -18,16 +17,12 @@ use swoole_websocket_server;
  */
 class WebsocketServer
 {
+    const PING_DELAY_MS = 25000;
+
     /**
      * @var swoole_websocket_server
      */
     private $ws;
-
-    /**
-     * @var swoole_channel
-     * Storage for user IDs
-     */
-    private $global_channel;
 
     /**
      * Messages table. Columns:
@@ -66,19 +61,15 @@ class WebsocketServer
             $this->onClose($id);
         });
 
-        $this->ws->on('start', function () {
-            $this->onStart();
+        $this->ws->on('workerStart', function (swoole_websocket_server $ws) {
+            $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
+                foreach ($ws->connections as $fd) {
+                    $ws->push($fd, 'ping', WEBSOCKET_OPCODE_PING);
+                }
+            });
         });
 
         $this->ws->start();
-    }
-
-    /**
-     * Server started
-     */
-    public function onStart()
-    {
-
     }
 
     /**
@@ -87,10 +78,6 @@ class WebsocketServer
      */
     private function onConnection(Request $request)
     {
-        $Ids = $this->global_channel->pop() ?? [];
-        $Ids[] = $request->fd;
-        $this->global_channel->push($Ids);
-
         $messagesResponse = new MessagesResponse();
         $count = count($this->messages_table);
         for ($i = 0; $i < $count; $i++) {
@@ -125,14 +112,6 @@ class WebsocketServer
      */
     private function onClose(int $id)
     {
-        if ($Ids = $this->global_channel->pop()) {
-            if (($key = array_search($id, $Ids)) !== FALSE) {
-                unset($Ids[$key]);
-            }
-        }
-
-        $this->global_channel->push($Ids);
-
         echo "client-{$id} is closed\n";
     }
 
@@ -177,9 +156,8 @@ class WebsocketServer
 
         $purifiedMessage = $this->purifier->purify($data->message);
 
-        $Ids = $this->global_channel->peek() ?? [];
         $response = (new MessagesResponse())->addMessage($username, $purifiedMessage, $dateTime)->getJson();
-        foreach ($Ids as $id) {
+        foreach ($this->ws->connections as $id) {
             $this->ws->push($id, $response);
         }
     }
@@ -230,8 +208,7 @@ class WebsocketServer
      */
     private function isUserOnline(int $id)
     {
-        $idsList = $this->global_channel->peek();
-        return (($key = array_search($id, $idsList)) !== false);
+        return (($key = array_search($id, $this->ws->connection_list())) !== false);
     }
 
     public function initTables()
@@ -246,16 +223,5 @@ class WebsocketServer
         $this->users_table->column('id', swoole_table::TYPE_INT, 5);
         $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
         $this->users_table->create();
-        $this->global_channel = new swoole_channel(1000);
-    }
-
-    public function sendPing()
-    {
-        $timestamp = time();
-        $ids = $this->global_channel->peek();
-        if (!$ids) return;
-        foreach ($ids as $userId) {
-            $this->ws->push($userId, $timestamp, WEBSOCKET_OPCODE_PING);
-        }
     }
 }
