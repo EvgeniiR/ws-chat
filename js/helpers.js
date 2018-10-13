@@ -8,3 +8,7 @@ function formatTimestamp(timestamp) {
     formatted_date = day + ' ' + month + ' ' + hour + ':' + minute;
     return formatted_date;
 }
+
+function sortMessagesByDateTime(message1, message2) {
+    return message1.dateTime - message2.dateTime;
+}

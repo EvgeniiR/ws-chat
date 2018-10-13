@@ -82,9 +82,22 @@ function send() {
 
 function getMessages(body) {
     if (body.messages !== undefined) {
+        messagesArray = [];
         body.messages.forEach(function (data) {
-            addMessage(formatTimestamp(data.dateTime), data.username, data.message)
-        })
+            messagesArray.push(data);
+        });
+        messagesArray.sort(sortMessagesByDateTime);
+        addMessages(messagesArray);
+    }
+}
+
+function addMessages(messagesArray) {
+    for(var i = 0; i < messagesArray.length; i++) {
+        console.log(messagesArray[i]);
+        addMessage(
+            formatTimestamp(messagesArray[i].dateTime),
+            messagesArray[i].username,
+            messagesArray[i].message)
     }
 }
 

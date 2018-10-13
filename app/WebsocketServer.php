@@ -79,13 +79,12 @@ class WebsocketServer
     private function onConnection(Request $request)
     {
         $messagesResponse = new MessagesResponse();
-        $count = count($this->messages_table);
-        for ($i = 0; $i < $count; $i++) {
-            $username = $this->messages_table[$i]->value['username'];
-            $message = $this->messages_table[$i]->value['message'];
-            $dateTIme = $this->messages_table[$i]->value['date_time'];
-            $messagesResponse->addMessage($username, $message, $dateTIme);
+
+        foreach ($this->messages_table as $message)
+        {
+            $messagesResponse->addMessage($message['username'], $message['message'], $message['date_time']);
         }
+
         $this->ws->push($request->fd, $messagesResponse->getJson());
         echo "client-{$request->fd} is connected\n";
     }
