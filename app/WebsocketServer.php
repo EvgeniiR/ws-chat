@@ -212,15 +212,15 @@ class WebsocketServer
 
     public function initTables()
     {
-        $this->messages_table = new swoole_table(1);
-        $this->messages_table->column('username', swoole_table::TYPE_STRING, 100);
-        $this->messages_table->column('message', swoole_table::TYPE_STRING, 250);
+        $this->messages_table = new swoole_table(262144);
+        $this->messages_table->column('username', swoole_table::TYPE_STRING, 64);
+        $this->messages_table->column('message', swoole_table::TYPE_STRING, 1024);
         $this->messages_table->column('date_time', swoole_table::TYPE_INT, 10);
         $this->messages_table->create();
 
         $this->users_table = new swoole_table(131072);
         $this->users_table->column('id', swoole_table::TYPE_INT, 5);
-        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
+        $this->users_table->column('username', swoole_table::TYPE_STRING, 64);
         $this->users_table->create();
     }
 }
