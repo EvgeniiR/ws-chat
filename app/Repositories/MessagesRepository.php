@@ -34,7 +34,7 @@ class MessagesRepository
     /**
      * @param Message $message
      */
-    public function insertOne(Message $message)
+    public function addOne(Message $message)
     {
         $stmt = $this->pdo->prepare("INSERT INTO messages (username, message) VALUES (:username, :message)");
         $stmt->execute(array('username' => $message->getUsername(), 'message' => $message->getMessage()));

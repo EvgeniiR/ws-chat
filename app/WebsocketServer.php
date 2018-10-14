@@ -147,7 +147,7 @@ class WebsocketServer
 
         $message = new Message($username, $data->message, $dateTime);
 
-        $this->messagesRepository->insertOne($message);
+        $this->messagesRepository->addOne($message);
 
         $response = (new MessagesResponse())->addMessage($message)->getJson();
         foreach ($this->ws->connections as $id) {
