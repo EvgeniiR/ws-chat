@@ -2,11 +2,11 @@
 
 namespace App;
 
+use App\classes\Message;
+use App\Repositories\MessagesRepository;
 use App\Response\ErrorResponse;
 use App\Response\LoginResponse;
 use App\Response\MessagesResponse;
-use HTMLPurifier;
-use HTMLPurifier_Config;
 use Swoole\Http\Request;
 use swoole_table;
 use swoole_websocket_server;
@@ -25,12 +25,9 @@ class WebsocketServer
     private $ws;
 
     /**
-     * Messages table. Columns:
-     *  - username
-     *  - message
-     * @var swoole_table
+     * @var MessagesRepository
      */
-    private $messages_table;
+    private $messagesRepository;
 
     /**
      * Users table. Columns:
@@ -45,9 +42,9 @@ class WebsocketServer
      */
     public function __construct()
     {
-        $this->purifier = new HTMLPurifier(HTMLPurifier_Config::createDefault());
-
         $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
+
+        $this->messagesRepository = new MessagesRepository();
 
         $this->initTables();
 
@@ -80,9 +77,8 @@ class WebsocketServer
     {
         $messagesResponse = new MessagesResponse();
 
-        foreach ($this->messages_table as $message)
-        {
-            $messagesResponse->addMessage($message['username'], $message['message'], $message['date_time']);
+        foreach ($this->messagesRepository->getAll() as $message) {
+            $messagesResponse->addMessage($message);
         }
 
         $this->ws->push($request->fd, $messagesResponse->getJson());
@@ -147,15 +143,13 @@ class WebsocketServer
             return;
         }
 
-        $count = count($this->messages_table);
+        $dateTime = new \DateTime("now", new \DateTimeZone("UTC"));
 
-        $dateTime = time();
-        $row = ['username' => $username, 'message' => $data->message, 'date_time' => $dateTime];
-        $this->messages_table->set($count, $row);
+        $message = new Message($username, $data->message, $dateTime);
 
-        $purifiedMessage = $this->purifier->purify($data->message);
+        $this->messagesRepository->insertOne($message);
 
-        $response = (new MessagesResponse())->addMessage($username, $purifiedMessage, $dateTime)->getJson();
+        $response = (new MessagesResponse())->addMessage($message)->getJson();
         foreach ($this->ws->connections as $id) {
             $this->ws->push($id, $response);
         }
@@ -212,15 +206,9 @@ class WebsocketServer
 
     public function initTables()
     {
-        $this->messages_table = new swoole_table(262144);
-        $this->messages_table->column('username', swoole_table::TYPE_STRING, 64);
-        $this->messages_table->column('message', swoole_table::TYPE_STRING, 1024);
-        $this->messages_table->column('date_time', swoole_table::TYPE_INT, 10);
-        $this->messages_table->create();
-
         $this->users_table = new swoole_table(131072);
-        $this->users_table->column('id', swoole_table::TYPE_INT, 5);
-        $this->users_table->column('username', swoole_table::TYPE_STRING, 64);
+        $this->users_table->column('id', swoole_table::TYPE_INT, 10);
+        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
         $this->users_table->create();
     }
 }

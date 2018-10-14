@@ -3,6 +3,9 @@
 namespace App\Response;
 
 
+use App\classes\Message;
+use App\Helpers\PurifierHelper;
+
 class MessagesResponse extends Response
 {
 	private $messages = [];
@@ -12,14 +15,24 @@ class MessagesResponse extends Response
 		return 'messages';
 	}
 
-	protected function getBody()
+    protected function getBody()
 	{
 		return ['messages' => $this->messages];
 	}
 
-	public function addMessage(string $username, string $message, int $dateTime)
+    /**
+     * @param Message $message
+     * @return MessagesResponse
+     */
+    public function addMessage(Message $message)
 	{
-		$this->messages[] = ['username' => $username, 'message' => $message, 'dateTime' => $dateTime];
+	    $purifiedMessage = PurifierHelper::purify($message->getMessage());
+	    $timestamp = $message->getDateTime()->getTimestamp();
+		$this->messages[] = [
+		    'username' => $message->getUsername(),
+            'message' => $purifiedMessage,
+            'dateTime' => $timestamp
+        ];
 		return $this;
 	}
 }

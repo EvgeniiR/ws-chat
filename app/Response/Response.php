@@ -6,7 +6,12 @@ namespace App\Response;
 abstract class Response
 {
 	abstract protected function getType(): string;
-	abstract protected function getBody();
+
+    /**
+     * Body section of Response
+     * @return mixed
+     */
+    abstract protected function getBody();
 
     /**
      * Return JSON response
