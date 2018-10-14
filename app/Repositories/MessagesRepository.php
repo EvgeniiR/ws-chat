@@ -19,7 +19,7 @@ class MessagesRepository
     }
 
     /**
-     * @return array
+     * @return Message[]
      */
     public function getAll()
     {
@@ -34,8 +34,9 @@ class MessagesRepository
     /**
      * @param Message $message
      */
-    public function addOne(Message $message)
+    public function save(Message $message)
     {
+        print('asd');
         $stmt = $this->pdo->prepare("INSERT INTO messages (username, message) VALUES (:username, :message)");
         $stmt->execute(array('username' => $message->getUsername(), 'message' => $message->getMessage()));
     }

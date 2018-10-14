@@ -3,7 +3,9 @@
 namespace App;
 
 use App\classes\Message;
+use App\classes\User;
 use App\Repositories\MessagesRepository;
+use App\Repositories\UsersRepository;
 use App\Response\ErrorResponse;
 use App\Response\LoginResponse;
 use App\Response\MessagesResponse;
@@ -30,12 +32,9 @@ class WebsocketServer
     private $messagesRepository;
 
     /**
-     * Users table. Columns:
-     *  - id
-     *  - username
-     * @var swoole_table
+     * @var UsersRepository
      */
-    private $users_table;
+    private $usersRepository;
 
     /**
      * WebsocketServer constructor.
@@ -46,7 +45,7 @@ class WebsocketServer
 
         $this->messagesRepository = new MessagesRepository();
 
-        $this->initTables();
+        $this->usersRepository = new UsersRepository();
 
         $this->ws->on('open', function ($ws, $request) {
             $this->onConnection($request);
@@ -60,8 +59,8 @@ class WebsocketServer
 
         $this->ws->on('workerStart', function (swoole_websocket_server $ws) {
             $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
-                foreach ($ws->connections as $fd) {
-                    $ws->push($fd, 'ping', WEBSOCKET_OPCODE_PING);
+                foreach ($ws->connections as $id) {
+                    $ws->push($id, 'ping', WEBSOCKET_OPCODE_PING);
                 }
             });
         });
@@ -107,20 +106,18 @@ class WebsocketServer
      */
     private function onClose(int $id)
     {
+        $this->usersRepository->delete($id);
         echo "client-{$id} is closed\n";
     }
 
     /**
      * @param int $id
-     * @return bool|string
+     * @return string
      */
     private function getUsername(int $id)
     {
-        $username = $this->users_table->get($id, 'username');
-        if ($username != false) {
-            return $username;
-        }
-        return false;
+        $user = $this->usersRepository->get($id);
+        return $user->getUsername();
     }
 
     /**
@@ -147,7 +144,7 @@ class WebsocketServer
 
         $message = new Message($username, $data->message, $dateTime);
 
-        $this->messagesRepository->addOne($message);
+        $this->messagesRepository->save($message);
 
         $response = (new MessagesResponse())->addMessage($message)->getJson();
         foreach ($this->ws->connections as $id) {
@@ -165,13 +162,14 @@ class WebsocketServer
             $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
             return;
         }
-        $row = ['id' => $id, 'username' => $username];
 
         if ($this->isUsernameCurrentlyTaken($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'Choose another name!'))->getJson());
+            return;
         }
 
-        $this->users_table->set($id, $row);
+        $user = new User($id, $username);
+        $this->usersRepository->save($user);
 
         $this->ws->push($id, (new LoginResponse(true))->getJson());
     }
@@ -183,9 +181,9 @@ class WebsocketServer
      */
     private function isUsernameCurrentlyTaken(string $username)
     {
-        foreach ($this->users_table as $user) {
-            if ($user['username'] == $username) {
-                $currentUserWithSomeNickId = $user['id'];
+        foreach ($this->usersRepository->getAllOnline($this->ws->connections) as $user) {
+            if ($user->getUsername() == $username) {
+                $currentUserWithSomeNickId = $user->getId();
                 if ($this->isUserOnline($currentUserWithSomeNickId)) {
                     return true;
                 }
@@ -204,11 +202,11 @@ class WebsocketServer
         return (($key = array_search($id, $this->ws->connection_list())) !== false);
     }
 
-    public function initTables()
-    {
-        $this->users_table = new swoole_table(131072);
-        $this->users_table->column('id', swoole_table::TYPE_INT, 10);
-        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
-        $this->users_table->create();
-    }
+//    public function initTables()
+//    {
+//        $this->users_table = new swoole_table(131072);
+//        $this->users_table->column('id', swoole_table::TYPE_INT, 10);
+//        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
+//        $this->users_table->create();
+//    }
 }
