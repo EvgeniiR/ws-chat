@@ -36,7 +36,6 @@ class MessagesRepository
      */
     public function save(Message $message)
     {
-        print('asd');
         $stmt = $this->pdo->prepare("INSERT INTO messages (username, message) VALUES (:username, :message)");
         $stmt->execute(array('username' => $message->getUsername(), 'message' => $message->getMessage()));
     }

@@ -43,10 +43,6 @@ class WebsocketServer
     {
         $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
 
-        $this->messagesRepository = new MessagesRepository();
-
-        $this->usersRepository = new UsersRepository();
-
         $this->ws->on('open', function ($ws, $request) {
             $this->onConnection($request);
         });
@@ -58,14 +54,23 @@ class WebsocketServer
         });
 
         $this->ws->on('workerStart', function (swoole_websocket_server $ws) {
-            $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
-                foreach ($ws->connections as $id) {
-                    $ws->push($id, 'ping', WEBSOCKET_OPCODE_PING);
-                }
-            });
+            $this->workerStart($ws);
         });
 
         $this->ws->start();
+    }
+
+    private function workerStart(swoole_websocket_server $ws)
+    {
+        $this->usersRepository = new UsersRepository();
+
+        $this->messagesRepository = new MessagesRepository();
+
+        $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
+            foreach ($ws->connections as $id) {
+                $ws->push($id, 'ping', WEBSOCKET_OPCODE_PING);
+            }
+        });
     }
 
     /**
