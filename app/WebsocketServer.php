@@ -10,7 +10,6 @@ use App\Response\ErrorResponse;
 use App\Response\LoginResponse;
 use App\Response\MessagesResponse;
 use Swoole\Http\Request;
-use swoole_table;
 use swoole_websocket_server;
 
 /**
@@ -60,17 +59,24 @@ class WebsocketServer
         $this->ws->start();
     }
 
+    /**
+     * @param swoole_websocket_server $ws
+     */
     private function onWorkerStart(swoole_websocket_server $ws)
     {
-        $this->usersRepository = new UsersRepository();
-
-        $this->messagesRepository = new MessagesRepository();
-
+        $this->initRepositories();
         $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
             foreach ($ws->connections as $id) {
                 $ws->push($id, 'ping', WEBSOCKET_OPCODE_PING);
             }
         });
+    }
+
+    private function initRepositories()
+    {
+        $this->usersRepository = new UsersRepository();
+
+        $this->messagesRepository = new MessagesRepository();
     }
 
     /**
@@ -206,12 +212,4 @@ class WebsocketServer
     {
         return (($key = array_search($id, $this->ws->connection_list())) !== false);
     }
-
-//    public function initTables()
-//    {
-//        $this->users_table = new swoole_table(131072);
-//        $this->users_table->column('id', swoole_table::TYPE_INT, 10);
-//        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
-//        $this->users_table->create();
-//    }
 }
