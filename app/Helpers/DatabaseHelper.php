@@ -37,6 +37,9 @@ class DatabaseHelper
         return self::$pdo;
     }
 
+    /**
+     * @return bool
+     */
     private static function ping()
     {
         try {

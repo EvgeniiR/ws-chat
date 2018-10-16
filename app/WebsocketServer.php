@@ -54,13 +54,13 @@ class WebsocketServer
         });
 
         $this->ws->on('workerStart', function (swoole_websocket_server $ws) {
-            $this->workerStart($ws);
+            $this->onWorkerStart($ws);
         });
 
         $this->ws->start();
     }
 
-    private function workerStart(swoole_websocket_server $ws)
+    private function onWorkerStart(swoole_websocket_server $ws)
     {
         $this->usersRepository = new UsersRepository();
 
