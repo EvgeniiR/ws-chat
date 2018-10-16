@@ -45,7 +45,7 @@ class DatabaseHelper
     private static function initPdo()
     {
         if (self::$timerId === null || (!Timer::exists(1))) {
-            self::$timerId = Timer::tick(1000 * 5, function () {
+            self::$timerId = Timer::tick(1000 * 60 * 5, function () {
                 self::ping();
             });
         }
