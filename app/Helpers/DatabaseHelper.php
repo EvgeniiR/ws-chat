@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\DBConfig;
 use PDO;
 use PDOException;
+use Swoole\Timer;
 
 class DatabaseHelper
 {
@@ -15,6 +16,8 @@ class DatabaseHelper
     );
 
     const DSN = 'mysql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE . ';charset=' . DBConfig::CHARSET;
+
+    private static $timerId = null;
 
     /**
      * @var PDO
@@ -33,12 +36,25 @@ class DatabaseHelper
         if (self::$pdo === null) {
             self::initPdo();
         }
-        swoole_timer_tick(1000*60*5, function () { self::ping(); });
         return self::$pdo;
     }
 
     /**
-     * @return bool
+     * Init new Connection, and ping DB timer function
+     */
+    private static function initPdo()
+    {
+        if (self::$timerId === null || (!Timer::exists(1))) {
+            self::$timerId = Timer::tick(1000 * 5, function () {
+                self::ping();
+            });
+        }
+
+        self::$pdo = new PDO(self::DSN, DBConfig::USER, DBConfig::PASSWORD, self::OPT);
+    }
+
+    /**
+     * Ping database to maintain the connection
      */
     private static function ping()
     {
@@ -47,12 +63,5 @@ class DatabaseHelper
         } catch (PDOException $e) {
             self::initPdo();
         }
-
-        return true;
-    }
-
-    private static function initPdo()
-    {
-        self::$pdo = new PDO(self::DSN, DBConfig::USER, DBConfig::PASSWORD, self::OPT);
     }
 }
