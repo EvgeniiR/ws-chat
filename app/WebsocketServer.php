@@ -42,6 +42,8 @@ class WebsocketServer
     {
         $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
 
+        $this->initSwooleAsyncRepositories();
+
         $this->ws->on('open', function ($ws, $request) {
             $this->onConnection($request);
         });
@@ -74,11 +76,13 @@ class WebsocketServer
 
     private function initRepositories()
     {
-        $this->usersRepository = new UsersRepository();
-
         $this->messagesRepository = new MessagesRepository();
     }
 
+    private function initSwooleAsyncRepositories()
+    {
+        $this->usersRepository = new UsersRepository();
+    }
     /**
      * Client connected
      * @param Request $request
@@ -192,12 +196,9 @@ class WebsocketServer
      */
     private function isUsernameCurrentlyTaken(string $username)
     {
-        foreach ($this->usersRepository->getAllOnline($this->ws->connections) as $user) {
+        foreach ($this->usersRepository->getByIds($this->ws->connections) as $user) {
             if ($user->getUsername() == $username) {
-                $currentUserWithSomeNickId = $user->getId();
-                if ($this->isUserOnline($currentUserWithSomeNickId)) {
-                    return true;
-                }
+                return true;
             }
         }
         return false;

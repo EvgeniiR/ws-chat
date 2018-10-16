@@ -9,6 +9,8 @@ use swoole_table;
 
 class UsersRepository
 {
+    private $users_table;
+
     public function __construct()
     {
         $this->users_table = new swoole_table(131072);
@@ -18,19 +20,21 @@ class UsersRepository
 
     /**
      * @param int $id
-     * @return User
+     * @return User|false
      */
     public function get(int $id)
     {
         $userRow = $this->users_table->get($id);
-        return new User($id, $userRow['username']);
+        if($userRow != false)
+            return new User($id, $userRow['username']);
+        return false;
     }
 
     /**
      * Get all online users
      * @return User[]
      */
-    public function getAllOnline(Iterator $ids)
+    public function getByIds(Iterator $ids)
     {
         $users = [];
         foreach ($ids as $id) {
