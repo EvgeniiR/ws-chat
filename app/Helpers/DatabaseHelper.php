@@ -24,6 +24,8 @@ class DatabaseHelper
      */
     protected static $pdo = null;
 
+    const MySQL_PING_INTERVAL = 1000 * 60 * 5;
+
     public function __construct(){}
 
     public function __clone(){}
@@ -44,8 +46,8 @@ class DatabaseHelper
      */
     private static function initPdo()
     {
-        if (self::$timerId === null || (!Timer::exists(1))) {
-            self::$timerId = Timer::tick(1000 * 60 * 5, function () {
+        if (self::$timerId === null || (!Timer::exists(self::$timerId))) {
+            self::$timerId = Timer::tick(self::MySQL_PING_INTERVAL, function () {
                 self::ping();
             });
         }
