@@ -83,6 +83,7 @@ class WebsocketServer
     {
         $this->usersRepository = new UsersRepository();
     }
+
     /**
      * Client connected
      * @param Request $request
@@ -144,14 +145,21 @@ class WebsocketServer
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @param $data
      */
-    function addMessage(int $id, $data)
+    function addMessage(int $userId, $data)
     {
-        $username = $this->getUsername($id);
+        $username = $this->getUsername($userId);
+
+        if (empty(trim($data->message))) {
+            $response = new ErrorResponse('Empty message');
+            $this->ws->push($userId, $response->getJson());
+            return;
+        }
+
         if ($username == false) {
-            $this->return_unauthorized($id);
+            $this->return_unauthorized($userId);
             return;
         }
 
@@ -162,8 +170,8 @@ class WebsocketServer
         $this->messagesRepository->save($message);
 
         $response = (new MessagesResponse())->addMessage($message)->getJson();
-        foreach ($this->ws->connections as $id) {
-            $this->ws->push($id, $response);
+        foreach ($this->ws->connections as $userId) {
+            $this->ws->push($userId, $response);
         }
     }
 

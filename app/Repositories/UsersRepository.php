@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 
 use App\classes\User;
-use Swoole\Connection\Iterator;
 use swoole_table;
 
 class UsersRepository

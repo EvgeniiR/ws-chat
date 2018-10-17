@@ -71,7 +71,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function send() {
+function sendMessage() {
     client.setField('type', 'message');
     client.setField('message', textbox.val());
     result = client.send();
