@@ -196,7 +196,7 @@ class WebsocketServer
      */
     private function isUsernameCurrentlyTaken(string $username)
     {
-        foreach ($this->usersRepository->getByIds($this->ws->connections) as $user) {
+        foreach ($this->usersRepository->getByIds($this->ws->connection_list()) as $user) {
             if ($user->getUsername() == $username) {
                 return true;
             }

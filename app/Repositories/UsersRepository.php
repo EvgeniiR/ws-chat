@@ -32,9 +32,10 @@ class UsersRepository
 
     /**
      * Get all online users
+     * @param int[] $ids
      * @return User[]
      */
-    public function getByIds(Iterator $ids)
+    public function getByIds(array $ids)
     {
         $users = [];
         foreach ($ids as $id) {
