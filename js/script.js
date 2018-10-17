@@ -132,6 +132,9 @@ function parseData(data) {
         case 'messages':
             getMessages(data.body);
             break;
+        case 'error':
+            alert('Error: ' + data.body.message);
+            break;
     }
 }
 

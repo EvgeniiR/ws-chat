@@ -4,6 +4,7 @@ namespace App;
 
 use App\classes\Message;
 use App\classes\User;
+use App\Helpers\SpamFilter;
 use App\Repositories\MessagesRepository;
 use App\Repositories\UsersRepository;
 use App\Response\ErrorResponse;
@@ -152,8 +153,12 @@ class WebsocketServer
     {
         $username = $this->getUsername($userId);
 
-        if (empty(trim($data->message))) {
-            $response = new ErrorResponse('Empty message');
+        $spamFilter = new SpamFilter();
+        $spamFilter->checkIsMessageTextCorrect($data->message);
+        $messageErrors = $spamFilter->getErrors();
+        if(! empty($messageErrors))
+        {
+            $response = new ErrorResponse($messageErrors[0]);
             $this->ws->push($userId, $response->getJson());
             return;
         }
