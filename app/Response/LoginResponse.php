@@ -5,28 +5,25 @@ namespace App\Response;
 
 class LoginResponse extends Response
 {
-	private $result;
+    private $result;
 
-	private $message;
+    private $message;
 
-	public function __construct(bool $result, string $message = null)
-	{
-		$this->result = $result;
-		$this->message = $message;
-	}
+    public function __construct(bool $result, string $message = null) {
+        $this->result = $result;
+        $this->message = $message;
+    }
 
-	protected function getType(): string
-	{
-		return 'login';
-	}
+    protected function getType(): string {
+        return 'login';
+    }
 
-	protected function getBody()
-	{
-		if ($this->message != null) {
+    protected function getBody() {
+        if ($this->message != null) {
             $body = ['result' => $this->result, 'message' => $this->message];
-		} else {
+        } else {
             $body = ['result' => $this->result];
-		}
-		return $body;
-	}
+        }
+        return $body;
+    }
 }

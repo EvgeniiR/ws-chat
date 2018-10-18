@@ -5,7 +5,7 @@ namespace App\Response;
 
 abstract class Response
 {
-	abstract protected function getType(): string;
+    abstract protected function getType(): string;
 
     /**
      * Body section of Response
@@ -17,8 +17,7 @@ abstract class Response
      * Return JSON response
      * @return false|string
      */
-    public function getJson()
-	{
-		return json_encode(['type' => $this->getType(), 'body' => $this->getBody()]);
-	}
+    public function getJson() {
+        return json_encode(['type' => $this->getType(), 'body' => $this->getBody()]);
+    }
 }

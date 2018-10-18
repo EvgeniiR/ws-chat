@@ -25,8 +25,7 @@ class Message
      * @param string $message
      * @param \DateTime $date_time
      */
-    public function __construct(string $username, string $message, \DateTime $date_time)
-    {
+    public function __construct(string $username, string $message, \DateTime $date_time) {
         $this->username = $username;
         $this->message = $message;
         $this->date_time = $date_time;
@@ -36,24 +35,21 @@ class Message
     /**
      * @return string
      */
-    public function getUsername(): string
-    {
+    public function getUsername(): string {
         return $this->username;
     }
 
     /**
      * @return string
      */
-    public function getMessage(): string
-    {
+    public function getMessage(): string {
         return $this->message;
     }
 
     /**
      * @return \DateTime
      */
-    public function getDateTime(): \DateTime
-    {
+    public function getDateTime(): \DateTime {
         return $this->date_time;
     }
 }

@@ -13,20 +13,18 @@ class MessagesRepository
     /**
      * MessageRepository constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->pdo = DatabaseHelper::pdoInstance();
     }
 
     /**
      * @return Message[]
      */
-    public function getAll()
-    {
+    public function getAll() {
         $stmt = $this->pdo->query('SELECT * from messages');
         $messages = [];
         foreach ($stmt->fetchAll() as $row) {
-            $messages[] = new Message( $row['username'], $row['message'], new \DateTime($row['date_time']) );
+            $messages[] = new Message($row['username'], $row['message'], new \DateTime($row['date_time']));
         }
         return $messages;
     }
@@ -34,8 +32,7 @@ class MessagesRepository
     /**
      * @param Message $message
      */
-    public function save(Message $message)
-    {
+    public function save(Message $message) {
         $stmt = $this->pdo->prepare("INSERT INTO messages (username, message) VALUES (:username, :message)");
         $stmt->execute(array('username' => $message->getUsername(), 'message' => $message->getMessage()));
     }

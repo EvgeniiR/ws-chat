@@ -13,17 +13,14 @@ class PurifierHelper
      */
     protected static $purifier = null;
 
-    private static function instance()
-    {
-        if(self::$purifier === null)
-        {
+    private static function instance() {
+        if (self::$purifier === null) {
             self::$purifier = new HTMLPurifier(HTMLPurifier_Config::createDefault());
         }
         return self::$purifier;
     }
 
-    public static function purify(string $stringToPurify, $config = null)
-    {
+    public static function purify(string $stringToPurify, $config = null) {
         return self::instance()->purify($stringToPurify, $config);
     }
 }

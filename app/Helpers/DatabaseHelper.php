@@ -26,15 +26,16 @@ class DatabaseHelper
 
     const MySQL_PING_INTERVAL = 1000 * 60 * 5;
 
-    public function __construct(){}
+    public function __construct() {
+    }
 
-    public function __clone(){}
+    public function __clone() {
+    }
 
     /**
      * @return PDO
      */
-    public static function pdoInstance()
-    {
+    public static function pdoInstance() {
         if (self::$pdo === null) {
             self::initPdo();
         }
@@ -44,8 +45,7 @@ class DatabaseHelper
     /**
      * Init new Connection, and ping DB timer function
      */
-    private static function initPdo()
-    {
+    private static function initPdo() {
         if (self::$timerId === null || (!Timer::exists(self::$timerId))) {
             self::$timerId = Timer::tick(self::MySQL_PING_INTERVAL, function () {
                 self::ping();
@@ -58,8 +58,7 @@ class DatabaseHelper
     /**
      * Ping database to maintain the connection
      */
-    private static function ping()
-    {
+    private static function ping() {
         try {
             self::$pdo->query('SELECT 1');
         } catch (PDOException $e) {

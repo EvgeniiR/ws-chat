@@ -18,8 +18,7 @@ class User
      * @param int $id
      * @param string $username
      */
-    public function __construct(int $id, string $username)
-    {
+    public function __construct(int $id, string $username) {
         $this->id = $id;
         $this->username = $username;
     }
@@ -27,16 +26,14 @@ class User
     /**
      * @return int
      */
-    public function getId(): int
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getUsername(): string
-    {
+    public function getUsername(): string {
         return $this->username;
     }
 }

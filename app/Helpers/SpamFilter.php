@@ -13,8 +13,7 @@ class SpamFilter
     /**
      * Check is message text correct
      */
-    public function checkIsMessageTextCorrect(string $text)
-    {
+    public function checkIsMessageTextCorrect(string $text) {
         if (empty(trim($text))) {
             $this->errors[] = 'Empty message text';
         }
@@ -23,8 +22,7 @@ class SpamFilter
     /**
      * @return string[] errors
      */
-    public function getErrors(): array
-    {
+    public function getErrors(): array {
         return $this->errors;
     }
 }

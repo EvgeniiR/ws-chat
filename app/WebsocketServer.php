@@ -39,8 +39,7 @@ class WebsocketServer
     /**
      * WebsocketServer constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
 
         $this->initSwooleAsyncRepositories();
@@ -65,8 +64,7 @@ class WebsocketServer
     /**
      * @param swoole_websocket_server $ws
      */
-    private function onWorkerStart(swoole_websocket_server $ws)
-    {
+    private function onWorkerStart(swoole_websocket_server $ws) {
         $this->initRepositories();
         $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
             foreach ($ws->connections as $id) {
@@ -75,13 +73,11 @@ class WebsocketServer
         });
     }
 
-    private function initRepositories()
-    {
+    private function initRepositories() {
         $this->messagesRepository = new MessagesRepository();
     }
 
-    private function initSwooleAsyncRepositories()
-    {
+    private function initSwooleAsyncRepositories() {
         $this->usersRepository = new UsersRepository();
     }
 
@@ -89,8 +85,7 @@ class WebsocketServer
      * Client connected
      * @param Request $request
      */
-    private function onConnection(Request $request)
-    {
+    private function onConnection(Request $request) {
         $messagesResponse = new MessagesResponse();
 
         foreach ($this->messagesRepository->getAll() as $message) {
@@ -104,8 +99,7 @@ class WebsocketServer
     /**
      * @param $frame
      */
-    private function onMessage($frame)
-    {
+    private function onMessage($frame) {
         echo 'We recieve: ';
         print_r($frame);
         $data = json_decode($frame->data);
@@ -121,27 +115,15 @@ class WebsocketServer
     /**
      * @param $id
      */
-    private function onClose(int $id)
-    {
+    private function onClose(int $id) {
         $this->usersRepository->delete($id);
         echo "client-{$id} is closed\n";
     }
 
     /**
      * @param int $id
-     * @return string
      */
-    private function getUsername(int $id)
-    {
-        $user = $this->usersRepository->get($id);
-        return $user->getUsername();
-    }
-
-    /**
-     * @param int $id
-     */
-    private function return_unauthorized(int $id)
-    {
+    private function returnUnauthorized(int $id) {
         $this->ws->push($id, (new ErrorResponse('Unauthorized!'))->getJson());
     }
 
@@ -149,28 +131,24 @@ class WebsocketServer
      * @param int $userId
      * @param $data
      */
-    function addMessage(int $userId, $data)
-    {
-        $username = $this->getUsername($userId);
+    function addMessage(int $userId, $data) {
+        $user = $this->usersRepository->get($userId);
+        if ($user === false) {
+            $this->returnUnauthorized($userId);
+        }
 
         $spamFilter = new SpamFilter();
         $spamFilter->checkIsMessageTextCorrect($data->message);
         $messageErrors = $spamFilter->getErrors();
-        if(! empty($messageErrors))
-        {
+        if (!empty($messageErrors)) {
             $response = new ErrorResponse($messageErrors[0]);
             $this->ws->push($userId, $response->getJson());
             return;
         }
 
-        if ($username == false) {
-            $this->return_unauthorized($userId);
-            return;
-        }
-
         $dateTime = new \DateTime("now", new \DateTimeZone("UTC"));
 
-        $message = new Message($username, $data->message, $dateTime);
+        $message = new Message($user->getUsername(), $data->message, $dateTime);
 
         $this->messagesRepository->save($message);
 
@@ -184,8 +162,7 @@ class WebsocketServer
      * @param int $id
      * @param string $username
      */
-    private function registerNewUser(int $id, $username)
-    {
+    private function registerNewUser(int $id, $username) {
         if (empty($username)) {
             $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
             return;
@@ -207,8 +184,7 @@ class WebsocketServer
      * @param string $username
      * @return bool
      */
-    private function isUsernameCurrentlyTaken(string $username)
-    {
+    private function isUsernameCurrentlyTaken(string $username) {
         foreach ($this->usersRepository->getByIds($this->ws->connection_list()) as $user) {
             if ($user->getUsername() == $username) {
                 return true;
@@ -222,8 +198,7 @@ class WebsocketServer
      * @param int $id
      * @return bool
      */
-    private function isUserOnline(int $id)
-    {
+    private function isUserOnline(int $id) {
         return (($key = array_search($id, $this->ws->connection_list())) !== false);
     }
 }
