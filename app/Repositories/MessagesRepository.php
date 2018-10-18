@@ -21,7 +21,7 @@ class MessagesRepository
      * @return Message[]
      */
     public function getAll() {
-        $stmt = $this->pdo->query('SELECT * from messages');
+        $stmt = $this->pdo->query('SELECT * FROM messages ORDER BY date_time DESC LIMIT 100');
         $messages = [];
         foreach ($stmt->fetchAll() as $row) {
             $messages[] = new Message($row['username'], $row['message'], new \DateTime($row['date_time']));
