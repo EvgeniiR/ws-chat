@@ -53,8 +53,8 @@ class UsersRepository
 		$result = $this->users_table->set($user->getId(), ['username' => $user->getUsername()]);
 		if ($result === false) {
 			$this->reCreateUsersTable();
+			$this->users_table->set($user->getId(), ['username' => $user->getUsername()]);
 		}
-		$this->users_table->set($user->getId(), ['username' => $user->getUsername()]);
 	}
 
 	public function reCreateUsersTable() {
