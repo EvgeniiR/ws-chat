@@ -8,6 +8,9 @@ use swoole_table;
 
 class UsersRepository
 {
+    /**
+     * @var swoole_table
+     */
     private $users_table;
 
     public function __construct() {
@@ -42,8 +45,11 @@ class UsersRepository
         return $users;
     }
 
-    public function delete(int $id) {
-        $this->users_table->del($id);
+    /**
+     * @param int $userId
+     */
+    public function delete(int $userId) {
+        $this->users_table->del($userId);
     }
 
     /**
