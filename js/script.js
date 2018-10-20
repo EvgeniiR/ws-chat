@@ -1,31 +1,37 @@
 var host = window.location.host;
-var socket = new WebSocket("ws:my_token@" + host + "/ws/");
+var socket;
 
-socket.keepalive = true;
+function connectToServer() {
+    socket = new WebSocket("ws:my_token@" + host + "/ws/");
 
-socket.onopen = function () {
-    console.log("Соединение установлено.");
-    client.login();
-};
+    socket.keepalive = true;
 
-socket.onclose = function (event) {
-    if (event.wasClean) {
-        console.log('Соединение закрыто чисто');
-    } else {
-        alert('Обрыв соединения!'); // например, "убит" процесс сервера
-    }
+    socket.onopen = function () {
+        console.log("Соединение установлено.");
+        client.login(username);
+    };
 
-    console.log('Код: ' + event.code + ' причина: ' + event.reason);
-};
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            console.log('Соединение закрыто чисто');
+        } else {
+            alert('Обрыв соединения!'); // например, "убит" процесс сервера
+        }
 
-socket.onmessage = function (event) {
-    console.log(event);
-    parseData(JSON.parse(event.data));
-};
+        console.log('Код: ' + event.code + ' причина: ' + event.reason);
+        console.log('Trying to reconnect');
+        connectToServer();
+    };
 
-socket.onerror = function (error) {
-    console.log("Ошибка " + error.message);
-};
+    socket.onmessage = function (event) {
+        console.log(event);
+        parseData(JSON.parse(event.data));
+    };
+
+    socket.onerror = function (error) {
+        console.log("Ошибка " + error.message);
+    };
+}
 
 class socketClient {
     constructor() {
@@ -36,10 +42,10 @@ class socketClient {
         this.queryFields[key] = value;
     }
 
-    login() {
-        var username;
-
-        username = prompt('Введите ваше имя', 'new user');
+    login(username) {
+        if (username === undefined) {
+            username = prompt('Введите ваше имя', 'new user');
+        }
 
         if (username === undefined) return false;
 
@@ -92,7 +98,7 @@ function getMessages(body) {
 }
 
 function addMessages(messagesArray) {
-    for(var i = 0; i < messagesArray.length; i++) {
+    for (var i = 0; i < messagesArray.length; i++) {
         console.log(messagesArray[i]);
         addMessage(
             formatTimestamp(messagesArray[i].dateTime),
@@ -123,10 +129,12 @@ function scrollChatboxDownIfUserWasAtTheBottom() {
 function parseData(data) {
     switch (data.type) {
         case 'login':
-            if (data.body.result === true)
+            if (data.body.result === true) {
                 authenticated = true;
+                username = data.body.username;
+            }
             else {
-                alert('authentication failed: ' + data.body.message + '. Try to refresh the page.');
+                alert('authentication with username' + data.body.username + 'failed: ' + data.body.message + '. Try to refresh the page.');
             }
             break;
         case 'messages':
@@ -138,6 +146,9 @@ function parseData(data) {
     }
 }
 
+connectToServer();
+
+var username;
 var textbox = $('#textbox');
 var chatbox = document.getElementById("chatbox");
 let client = new socketClient();

@@ -4,6 +4,7 @@ namespace App;
 
 use App\classes\Message;
 use App\classes\User;
+use App\Helpers\PurifierHelper;
 use App\Helpers\SpamFilter;
 use App\Repositories\MessagesRepository;
 use App\Repositories\UsersRepository;
@@ -163,20 +164,25 @@ class WebsocketServer
      * @param string $username
      */
     private function registerNewUser(int $id, $username) {
+        $username = PurifierHelper::purify($username);
+        if ($user = $this->usersRepository->get($id) !== false) {
+            $this->ws->push($id, (new ErrorResponse('You are already logged in'))->getJson());
+        }
+
         if (empty($username)) {
-            $this->ws->push($id, (new LoginResponse(false, 'username cannot be empty'))->getJson());
+            $this->ws->push($id, (new LoginResponse(false, $username, 'username cannot be empty'))->getJson());
             return;
         }
 
         if ($this->isUsernameCurrentlyTaken($username)) {
-            $this->ws->push($id, (new LoginResponse(false, 'Choose another name!'))->getJson());
+            $this->ws->push($id, (new LoginResponse(false, $username, 'Choose another name!'))->getJson());
             return;
         }
 
         $user = new User($id, $username);
         $this->usersRepository->save($user);
 
-        $this->ws->push($id, (new LoginResponse(true))->getJson());
+        $this->ws->push($id, (new LoginResponse(true, $username))->getJson());
     }
 
     /**

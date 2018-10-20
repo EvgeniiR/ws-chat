@@ -7,10 +7,13 @@ class LoginResponse extends Response
 {
     private $result;
 
+    private $username;
+
     private $message;
 
-    public function __construct(bool $result, string $message = null) {
+    public function __construct(bool $result, string $username, string $message = null) {
         $this->result = $result;
+        $this->username = $username;
         $this->message = $message;
     }
 
@@ -20,9 +23,9 @@ class LoginResponse extends Response
 
     protected function getBody() {
         if ($this->message != null) {
-            $body = ['result' => $this->result, 'message' => $this->message];
+            $body = ['result' => $this->result, 'username' => $this->username, 'message' => $this->message];
         } else {
-            $body = ['result' => $this->result];
+            $body = ['result' => $this->result, 'username' => $this->username];
         }
         return $body;
     }
