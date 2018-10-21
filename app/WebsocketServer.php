@@ -12,7 +12,7 @@ use App\Response\ErrorResponse;
 use App\Response\LoginResponse;
 use App\Response\MessagesResponse;
 use Swoole\Http\Request;
-use swoole_websocket_server;
+use Swoole\WebSocket\Server;
 
 /**
  * Class WebsocketServer
@@ -23,7 +23,7 @@ class WebsocketServer
     const PING_DELAY_MS = 25000;
 
     /**
-     * @var swoole_websocket_server
+     * @var Server
      */
     private $ws;
 
@@ -41,7 +41,7 @@ class WebsocketServer
      * WebsocketServer constructor.
      */
     public function __construct() {
-        $this->ws = new swoole_websocket_server('0.0.0.0', 9502);
+        $this->ws = new Server('0.0.0.0', 9502);
 
         $this->initSwooleAsyncRepositories();
 
@@ -55,7 +55,7 @@ class WebsocketServer
             $this->onClose($id);
         });
 
-        $this->ws->on('workerStart', function (swoole_websocket_server $ws) {
+        $this->ws->on('workerStart', function (Server $ws) {
             $this->onWorkerStart($ws);
         });
 
@@ -63,9 +63,9 @@ class WebsocketServer
     }
 
     /**
-     * @param swoole_websocket_server $ws
+     * @param Server $ws
      */
-    private function onWorkerStart(swoole_websocket_server $ws) {
+    private function onWorkerStart(Server $ws) {
         $this->initRepositories();
         $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
             foreach ($ws->connections as $id) {
