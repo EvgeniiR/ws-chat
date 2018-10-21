@@ -183,7 +183,7 @@ class WebsocketServer
             $this->ws->push($id, (new ErrorResponse('You are already logged in'))->getJson());
         }
 
-        if (empty($username)) {
+        if (empty(trim($username))) {
             $this->ws->push($id, (new LoginResponse(false, $username, 'username cannot be empty'))->getJson());
             return;
         }
@@ -200,7 +200,6 @@ class WebsocketServer
     }
 
     /**
-     * Check if there are online users with some username
      * @param string $username
      * @return bool
      */
