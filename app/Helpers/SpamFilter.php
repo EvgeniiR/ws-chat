@@ -11,12 +11,16 @@ class SpamFilter
     private $errors = [];
 
     /**
-     * Check is message text correct
+     * @param string $text
+     * @return bool
      */
     public function checkIsMessageTextCorrect(string $text) {
+        $isCorrect = true;
         if (empty(trim($text))) {
             $this->errors[] = 'Empty message text';
+            $isCorrect = false;
         }
+        return $isCorrect;
     }
 
     /**

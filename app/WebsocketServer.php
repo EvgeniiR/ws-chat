@@ -5,6 +5,7 @@ namespace App;
 use App\classes\Message;
 use App\classes\User;
 use App\Helpers\PurifierHelper;
+use App\Helpers\RequestLimiter;
 use App\Helpers\SpamFilter;
 use App\Repositories\MessagesRepository;
 use App\Repositories\UsersRepository;
@@ -38,9 +39,16 @@ class WebsocketServer
     private $usersRepository;
 
     /**
+     * @var RequestLimiter
+     */
+    private $requestsLimiter;
+
+    /**
      * WebsocketServer constructor.
      */
     public function __construct() {
+        $this->requestsLimiter = new RequestLimiter();
+
         $this->ws = new Server('0.0.0.0', 9502);
 
         $this->initSwooleAsyncRepositories();
@@ -109,7 +117,7 @@ class WebsocketServer
                 $this->registerNewUser($frame->fd, $data->username);
                 break;
             case 'message':
-                $this->addMessage($frame->fd, $data);
+                $this->processMessage($frame->fd, $data);
         }
     }
 
@@ -132,10 +140,16 @@ class WebsocketServer
      * @param int $userId
      * @param $data
      */
-    function addMessage(int $userId, $data) {
+    function processMessage(int $userId, $data) {
+        if (! $this->requestsLimiter->checkIsRequestAllowed($userId)) {
+            $this->ws->push($userId, (new ErrorResponse('Too many messages! Try again later.'))->getJson());
+            return;
+        }
+
         $user = $this->usersRepository->get($userId);
         if ($user === false) {
             $this->returnUnauthorized($userId);
+            return;
         }
 
         $spamFilter = new SpamFilter();

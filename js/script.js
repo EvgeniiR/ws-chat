@@ -8,6 +8,7 @@ function connectToServer() {
 
     socket.onopen = function () {
         console.log("Соединение установлено.");
+        console.log('Connected!');
         client.login(username);
     };
 
@@ -15,7 +16,7 @@ function connectToServer() {
         if (event.wasClean) {
             console.log('Соединение закрыто чисто');
         } else {
-            alert('Обрыв соединения!'); // например, "убит" процесс сервера
+            console.log('Обрыв соединения!');
         }
 
         console.log('Код: ' + event.code + ' причина: ' + event.reason);
