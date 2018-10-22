@@ -49,9 +49,9 @@ class WebsocketServer
     public function __construct() {
         $this->requestsLimiter = new RequestLimiter();
 
-        $this->ws = new Server('0.0.0.0', 9502);
+        $this->initRepositories();
 
-        $this->initSwooleAsyncRepositories();
+        $this->ws = new Server('0.0.0.0', 9502);
 
         $this->ws->on('open', function ($ws, $request) {
             $this->onConnection($request);
@@ -62,7 +62,6 @@ class WebsocketServer
         $this->ws->on('close', function ($ws, $id) {
             $this->onClose($id);
         });
-
         $this->ws->on('workerStart', function (Server $ws) {
             $this->onWorkerStart($ws);
         });
@@ -74,7 +73,8 @@ class WebsocketServer
      * @param Server $ws
      */
     private function onWorkerStart(Server $ws) {
-        $this->initRepositories();
+        $this->initAsyncRepositories();
+
         $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
             foreach ($ws->connections as $id) {
                 $ws->push($id, 'ping', WEBSOCKET_OPCODE_PING);
@@ -82,11 +82,17 @@ class WebsocketServer
         });
     }
 
-    private function initRepositories() {
+    /**
+     * Async repositories must be initialized after master process
+     */
+    private function initAsyncRepositories() {
         $this->messagesRepository = new MessagesRepository();
     }
 
-    private function initSwooleAsyncRepositories() {
+    /**
+     * Repositories that must be initialized in master process
+     */
+    private function initRepositories() {
         $this->usersRepository = new UsersRepository();
     }
 
@@ -141,7 +147,7 @@ class WebsocketServer
      * @param $data
      */
     function processMessage(int $userId, $data) {
-        if (! $this->requestsLimiter->checkIsRequestAllowed($userId)) {
+        if (!$this->requestsLimiter->checkIsRequestAllowed($userId)) {
             $this->ws->push($userId, (new ErrorResponse('Too many messages! Try again later.'))->getJson());
             return;
         }

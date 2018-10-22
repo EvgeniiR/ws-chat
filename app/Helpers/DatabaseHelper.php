@@ -17,20 +17,17 @@ class DatabaseHelper
 
     const DSN = 'mysql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE . ';charset=' . DBConfig::CHARSET;
 
+    const MySQL_PING_INTERVAL = 1000 * 60 * 5;
+
+    /**
+     * @var int|null
+     */
     private static $timerId = null;
 
     /**
      * @var PDO
      */
     protected static $pdo = null;
-
-    const MySQL_PING_INTERVAL = 1000 * 60 * 5;
-
-    public function __construct() {
-    }
-
-    public function __clone() {
-    }
 
     /**
      * @return PDO
