@@ -184,7 +184,7 @@ class WebsocketServer
      * @param string $username
      */
     private function registerNewUser(int $id, $username) {
-        $username = PurifierHelper::purify($username);
+        $username = PurifierHelper::purify((string)$username);
         if ($user = $this->usersRepository->get($id) !== false) {
             $this->ws->push($id, (new ErrorResponse('You are already logged in'))->getJson());
         }
