@@ -11,9 +11,9 @@ class RequestLimiter
      */
     private $userIds;
 
-    const MAX_RECORDS_COUNT = 10;
+    const MAX_SAVED_RECORDS_COUNT = 6;
 
-    const MAX_REQUESTS_BY_USER = 4;
+    const MAX_REQUESTS_BY_USER = 5;
 
     public function __construct() {
         $this->userIds = new Channel(1024 * 64);
@@ -58,7 +58,7 @@ class RequestLimiter
     private function addRecord(int $userId) {
         $recordsCount = $this->userIds->stats()['queue_num'];
 
-        if ($recordsCount >= self::MAX_RECORDS_COUNT) {
+        if ($recordsCount >= self::MAX_SAVED_RECORDS_COUNT) {
             $this->userIds->pop();
         }
 
