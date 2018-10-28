@@ -2,16 +2,18 @@
 
 namespace App;
 
+use App\classes\Helpers\PurifierHelper;
+use App\classes\Helpers\RequestLimiter;
+use App\classes\Helpers\SpamFilter;
 use App\classes\Message;
+use App\classes\Repositories\MessagesRepository;
+use App\classes\Repositories\UsersRepository;
+use App\classes\Request\LoginRequest;
+use App\classes\Request\MessageRequest;
+use App\classes\Response\ErrorResponse;
+use App\classes\Response\LoginResponse;
+use App\classes\Response\MessagesResponse;
 use App\classes\User;
-use App\Helpers\PurifierHelper;
-use App\Helpers\RequestLimiter;
-use App\Helpers\SpamFilter;
-use App\Repositories\MessagesRepository;
-use App\Repositories\UsersRepository;
-use App\Response\ErrorResponse;
-use App\Response\LoginResponse;
-use App\Response\MessagesResponse;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
 
@@ -120,10 +122,12 @@ class WebsocketServer
         $data = json_decode($frame->data);
         switch ($data->type) {
             case 'login':
-                $this->registerNewUser($frame->fd, $data->username);
+                $loginRequest = new LoginRequest($frame->fd, $data->username);
+                $this->registerNewUser($loginRequest);
                 break;
             case 'message':
-                $this->processMessage($frame->fd, $data);
+                $messageRequest = new MessageRequest($frame->fd, $data);
+                $this->processMessage($messageRequest);
                 break;
             default:
                 $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type')));
@@ -148,9 +152,10 @@ class WebsocketServer
 
     /**
      * @param int $userId
-     * @param $data
+     * @param MessageRequest $messageRequest
      */
-    function processMessage(int $userId, $data) {
+    function processMessage(MessageRequest $messageRequest) {
+        $userId = $messageRequest->getUserId();
         if (!$this->requestsLimiter->checkIsRequestAllowed($userId)) {
             $this->ws->push($userId, (new ErrorResponse('Too many messages! Try again later.'))->getJson());
             return;
@@ -163,7 +168,7 @@ class WebsocketServer
         }
 
         $spamFilter = new SpamFilter();
-        $spamFilter->checkIsMessageTextCorrect($data->message);
+        $spamFilter->checkIsMessageTextCorrect($messageRequest->getMessage());
         $messageErrors = $spamFilter->getErrors();
         if (!empty($messageErrors)) {
             $response = new ErrorResponse($messageErrors[0]);
@@ -185,10 +190,11 @@ class WebsocketServer
 
     /**
      * @param int $id
-     * @param string $username
+     * @param LoginRequest $loginRequest
      */
-    private function registerNewUser(int $id, $username) {
-        $username = PurifierHelper::purify((string)$username);
+    private function registerNewUser(LoginRequest $loginRequest) {
+        $id = $loginRequest->getUserId();
+        $username = PurifierHelper::purify((string)$loginRequest->getUsername());
         if ($user = $this->usersRepository->get($id) !== false) {
             $this->ws->push($id, (new ErrorResponse('You are already logged in'))->getJson());
         }

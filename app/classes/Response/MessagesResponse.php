@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Response;
+namespace App\classes\Response;
 
 
 use App\classes\Message;
-use App\Helpers\PurifierHelper;
+use App\classes\Helpers\PurifierHelper;
 
 class MessagesResponse extends Response
 {

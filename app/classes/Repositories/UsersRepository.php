@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\classes\Repositories;
 
 
 use App\classes\User;

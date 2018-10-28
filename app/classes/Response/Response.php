@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Response;
+namespace App\classes\Response;
 
 
 abstract class Response
