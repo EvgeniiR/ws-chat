@@ -120,19 +120,19 @@ class WebsocketServer
         echo 'We recieve: ';
         print_r($frame);
 
-        $data = json_decode($frame->data);
-        if( ! isset($data->type) ) {
+        $decodedData = json_decode($frame->data);
+        if( ! isset($decodedData->type) ) {
             $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Can`t parse request type')));
             return;
         }
 
-        $requestType = $data->type;
+        $requestType = $decodedData->type;
         switch ($requestType) {
             case 'login':
-                $this->processLoginRequest($frame->fd, $data);
+                $this->processLoginRequest($frame->fd, $decodedData);
                 break;
             case 'message':
-                $this->processMessageRequest($frame->fd, $data);
+                $this->processMessageRequest($frame->fd, $decodedData);
                 break;
             default:
                 $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type')));
