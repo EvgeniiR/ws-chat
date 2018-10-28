@@ -119,20 +119,43 @@ class WebsocketServer
     private function onMessage($frame) {
         echo 'We recieve: ';
         print_r($frame);
+
         $data = json_decode($frame->data);
-        switch ($data->type) {
+        if( ! isset($data->type) ) {
+            $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Can`t parse request type')));
+            return;
+        }
+
+        $requestType = $data->type;
+        switch ($requestType) {
             case 'login':
-                $loginRequest = new LoginRequest($frame->fd, $data->username);
-                $this->registerNewUser($loginRequest);
+                $this->processLoginRequest($frame->fd, $data);
                 break;
             case 'message':
-                $messageRequest = new MessageRequest($frame->fd, $data);
-                $this->processMessage($messageRequest);
+                $this->processMessageRequest($frame->fd, $data);
                 break;
             default:
                 $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type')));
                 break;
         }
+    }
+
+    public function processLoginRequest(int $userId, $data) {
+        if( ! isset($data->username) ) {
+            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse username')));
+            return;
+        }
+        $loginRequest = new LoginRequest($userId, $data->username);
+        $this->registerNewUser($loginRequest);
+    }
+
+    public function processMessageRequest(int $userId, $data) {
+        if( ! isset($data->message) ) {
+            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse message')));
+            return;
+        }
+        $messageRequest = new MessageRequest($userId, $data->message);
+        $this->processMessage($messageRequest);
     }
 
     /**
@@ -156,6 +179,7 @@ class WebsocketServer
      */
     function processMessage(MessageRequest $messageRequest) {
         $userId = $messageRequest->getUserId();
+        $message = $messageRequest->getMessage();
         if (!$this->requestsLimiter->checkIsRequestAllowed($userId)) {
             $this->ws->push($userId, (new ErrorResponse('Too many messages! Try again later.'))->getJson());
             return;
@@ -168,7 +192,7 @@ class WebsocketServer
         }
 
         $spamFilter = new SpamFilter();
-        $spamFilter->checkIsMessageTextCorrect($messageRequest->getMessage());
+        $spamFilter->checkIsMessageTextCorrect($message);
         $messageErrors = $spamFilter->getErrors();
         if (!empty($messageErrors)) {
             $response = new ErrorResponse($messageErrors[0]);
@@ -178,7 +202,7 @@ class WebsocketServer
 
         $dateTime = new \DateTime("now", new \DateTimeZone("UTC"));
 
-        $message = new Message($user->getUsername(), $data->message, $dateTime);
+        $message = new Message($user->getUsername(), $message, $dateTime);
 
         $this->messagesRepository->save($message);
 
