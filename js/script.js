@@ -121,7 +121,9 @@ function scrollChatboxDownIfUserWasAtTheBottom() {
     userScrollMaxValue = scrollHeight - offsetHeight;
 
     let scrollProportion = (currentScrollPosition / userScrollMaxValue);
-    if (scrollProportion > 0.8 || scrollProportion === 0) {
+    if (scrollProportion > 0.8 || // on bottom
+        scrollProportion < 0.01) // on Top
+    {
         chatbox.scrollTop = userScrollMaxValue;
     }
 }
