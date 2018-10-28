@@ -124,6 +124,10 @@ class WebsocketServer
                 break;
             case 'message':
                 $this->processMessage($frame->fd, $data);
+                break;
+            default:
+                $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type')));
+                break;
         }
     }
 
