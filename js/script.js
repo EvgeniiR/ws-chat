@@ -7,19 +7,18 @@ function connectToServer() {
     socket.keepalive = true;
 
     socket.onopen = function () {
-        console.log("Соединение установлено.");
         console.log('Connected!');
         client.login(username);
     };
 
     socket.onclose = function (event) {
         if (event.wasClean) {
-            console.log('Соединение закрыто чисто');
+            console.log('Connection closed withoud errors');
         } else {
-            console.log('Обрыв соединения!');
+            console.log('Connection interrupted');
         }
 
-        console.log('Код: ' + event.code + ' причина: ' + event.reason);
+        console.log('Code: ' + event.code + ' reason: ' + event.reason);
         console.log('Trying to reconnect');
         connectToServer();
     };
@@ -30,7 +29,7 @@ function connectToServer() {
     };
 
     socket.onerror = function (error) {
-        console.log("Ошибка " + error.message);
+        console.log("Error " + error.message);
     };
 }
 
@@ -45,7 +44,7 @@ class socketClient {
 
     login(username) {
         if (username === undefined) {
-            username = prompt('Введите ваше имя', 'new user');
+            username = prompt('Enter you name', 'new user');
         }
 
         if (username === undefined) return false;
@@ -135,7 +134,7 @@ function parseData(data) {
                 username = data.body.username;
             }
             else {
-                alert('authentication with username' + data.body.username + 'failed: ' + data.body.message + '. Try to refresh the page.');
+                alert('Authentication with username' + data.body.username + 'failed: ' + data.body.message);
             }
             break;
         case 'messages':
