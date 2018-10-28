@@ -122,7 +122,7 @@ class WebsocketServer
 
         $decodedData = json_decode($frame->data);
         if( ! isset($decodedData->type) ) {
-            $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Can`t parse request type')));
+            $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Can`t parse request type'))->getJson());
             return;
         }
 
@@ -135,14 +135,14 @@ class WebsocketServer
                 $this->processMessageRequest($frame->fd, $decodedData);
                 break;
             default:
-                $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type')));
+                $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type'))->getJson());
                 break;
         }
     }
 
     public function processLoginRequest(int $userId, $data) {
         if( ! isset($data->username) ) {
-            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse username')));
+            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse username'))->getJson());
             return;
         }
         $loginRequest = new LoginRequest($userId, $data->username);
@@ -151,7 +151,7 @@ class WebsocketServer
 
     public function processMessageRequest(int $userId, $data) {
         if( ! isset($data->message) ) {
-            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse message')));
+            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse message'))->getJson());
             return;
         }
         $messageRequest = new MessageRequest($userId, $data->message);
