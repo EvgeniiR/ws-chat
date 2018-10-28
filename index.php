@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <div class="col-xl-8 center-block" id="chatbox"></div>
     <textarea class="col-xl-8 center-block" id="textbox"></textarea>
-    <button class="col-xl-8 center-block btn-send" onclick="sendMessage()">Отправить</button>
+    <button class="col-xl-8 center-block btn-send" onclick="sendMessage()">Send message</button>
 </div>
 <script src="./js/helpers.js"></script>
 <script src="./js/script.js"></script>
