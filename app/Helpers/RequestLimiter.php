@@ -11,7 +11,7 @@ class RequestLimiter
      */
     private $userIds;
 
-    const MAX_SAVED_RECORDS_COUNT = 6;
+    const MAX_SAVED_RECORDS_COUNT = 5;
 
     const MAX_REQUESTS_BY_USER = 5;
 
