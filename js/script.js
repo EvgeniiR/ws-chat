@@ -109,7 +109,7 @@ function addMessages(messagesArray) {
 
 function addMessage(dateTime, username, text) {
     text = showLinksInText(text);
-    chatbox.append(dateTime + ":" + username + ". " + text);
+    chatbox.innerHTML += dateTime + ":" + username + ". " + text;
     chatbox.appendChild(document.createElement("br"));
     scrollChatboxDownIfUserWasAtTheBottom();
 }
