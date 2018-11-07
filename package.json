@@ -1,0 +1,32 @@
+{
+  "name": "ws-chat",
+  "version": "1.0.0",
+  "description": "Online chat on websocket using Swoole (https://www.swoole.co.uk/) Working example here: http://62.109.21.96/",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "hot": "NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "production": "NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EvgeniiR/ws-chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EvgeniiR/ws-chat/issues"
+  },
+  "homepage": "https://github.com/EvgeniiR/ws-chat#readme",
+  "devDependencies": {
+    "laravel-mix": "^2.1.14"
+  },
+  "dependencies": {
+    "bootstrap": "^4.1.3",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.4",
+    "vue": "^2.5.17"
+  }
+}
