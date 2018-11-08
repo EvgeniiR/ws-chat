@@ -13,11 +13,9 @@
 <script>
     import ChatClientRequestBuilder from '../services/ChatClientRequestBuilder';
     import Message from './Message.vue';
-    import collection from '../mixins/Collection';
 
     export default {
         components: { Message },
-        mixins: [collection],
         data() {
             return{
                 messages: [],
