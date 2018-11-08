@@ -1,8 +1,12 @@
 <template>
    <div>
-       <div v-for="(message) in messages">
-           <message :message="message"></message>
+       <div class="col-xl-8 center-block" id="chatbox">
+           <div v-for="(message) in messages">
+               <message :message="message"></message>
+           </div>
        </div>
+       <textarea class="col-xl-8 center-block" id="textbox" v-model="chatboxMessage"></textarea>
+       <button class="col-xl-8 center-block btn-send" @click="sendMessage()">Send message</button>
    </div>
 </template>
 
@@ -21,7 +25,7 @@
                 chatClient: undefined,
                 authenticated: undefined,
                 username: undefined,
-                dataSet: false
+                chatboxMessage: ''
             }
         },
         created() {
@@ -101,9 +105,14 @@
                             return message1.dateTime - message2.dateTime;
                         }
                     );
-
-                    this.messages = this.messages.concat(this.messages, messagesArray);
+                    this.messages = this.messages.concat(messagesArray);
                 }
+            },
+
+            sendMessage() {
+                this.chatClient.sendMessage(this.chatboxMessage);
+
+                this.chatboxMessage = '';
             }
         }
     }

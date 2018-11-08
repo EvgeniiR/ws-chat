@@ -16,6 +16,13 @@ export default class ChatClientRequestBuilder {
     }
 
     sendMessage(message) {
+        this.setField('type', 'message');
+        this.setField('message', message);
+        this.sendRequest();
+    }
 
+    sendRequest() {
+        this.websocket.send(JSON.stringify(this.queryFields));
+        return true;
     }
 }

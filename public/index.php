@@ -9,16 +9,9 @@
 </head>
 <body>
     <div id="app">
-        <chatbox></chatbox>
-<!--        <message :message="">-->
-<!---->
-<!--        </message>-->
-<!--        <div class="container-fluid">-->
-<!--            <div class="col-xl-8 center-block" id="chatbox"></div>-->
-<!--            <textarea class="col-xl-8 center-block" id="textbox"></textarea>-->
-<!--            <button class="col-xl-8 center-block btn-send" onclick="sendMessage()">Send message</button>-->
-<!--        </div>-->
-
+        <div class="container-fluid">
+            <chatbox></chatbox>
+        </div>
     </div>
     <script src="./js/app.js"></script>
     <link rel="stylesheet" href="./css/app.css">

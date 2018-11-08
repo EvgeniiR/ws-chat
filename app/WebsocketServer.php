@@ -201,7 +201,6 @@ class WebsocketServer
         }
 
         $dateTime = new \DateTime("now", new \DateTimeZone("UTC"));
-
         $message = new Message($user->getUsername(), $message, $dateTime);
 
         $this->messagesRepository->save($message);
