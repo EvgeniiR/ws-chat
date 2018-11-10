@@ -5,7 +5,7 @@
                <message :message="message"></message>
            </div>
        </div>
-       <textarea class="col-xl-8 center-block" id="textbox" v-model="chatboxMessage"></textarea>
+       <textarea class="col-xl-8 center-block" @keydown.enter.prevent="sendMessage()" id="textbox" v-model="chatboxMessage"></textarea>
        <button class="col-xl-8 center-block btn-send" @click="sendMessage()">Send message</button>
    </div>
 </template>
@@ -39,7 +39,7 @@
 
                 this.websocket.onopen = function () {
                     console.log('Connected!');
-                    self.login();
+                    self.authenticate();
                 };
 
                 this.websocket.onclose = function (event) {
@@ -56,7 +56,7 @@
 
                 this.websocket.onmessage = function (event) {
                     console.log(event);
-                    self.parseMessage(JSON.parse(event.data));
+                    self.parseResponse(JSON.parse(event.data));
                 };
 
                 this.websocket.onerror = function (error) {
@@ -64,15 +64,20 @@
                 };
             },
 
-            login() {
-                if (this.username === undefined) {
+            authenticate() {
+                while (this.username === null ||
+                    this.username === undefined ||
+                    (! this.username)
+                ) {
                     this.username = prompt('Enter you name', 'New user');
+                    if(this.username === null) { return; }
+                    this.username = this.username.trim();
                 }
 
                 this.chatClient.login(this.username);
             },
 
-            parseMessage(data) {
+            parseResponse(data) {
                 switch (data.type) {
                     case 'login':
                         if (data.body.result === true) {
@@ -80,7 +85,9 @@
                             this.username = data.body.username;
                         }
                         else {
-                            alert('Authentication with username' + data.body.username + 'failed: ' + data.body.message);
+                            alert('Authentication with username' + data.body.username + ' failed: ' + data.body.message);
+                            this.username = false;
+                            this.authenticate();
                         }
                         break;
                     case 'messages':
@@ -108,9 +115,12 @@
             },
 
             sendMessage() {
-                this.chatClient.sendMessage(this.chatboxMessage);
-
-                this.chatboxMessage = '';
+                if(this.authenticated) {
+                    this.chatClient.sendMessage(this.chatboxMessage);
+                    this.chatboxMessage = '';
+                } else {
+                    this.authenticate();
+                }
             }
         }
     }

@@ -11,8 +11,7 @@ export default class ChatClientRequestBuilder {
     login(username) {
         this.setField('type', 'login');
         this.setField('username', username);
-
-        this.websocket.send(JSON.stringify(this.queryFields));
+        this.sendRequest();
     }
 
     sendMessage(message) {
