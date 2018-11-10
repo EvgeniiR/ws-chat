@@ -1,10 +1,6 @@
 <template>
    <div>
-       <div class="col-xl-8 center-block" id="chatbox">
-           <div v-for="(message) in messages">
-               <message :message="message"></message>
-           </div>
-       </div>
+       <messages-view :messages="messages"></messages-view>
        <textarea class="col-xl-8 center-block" @keydown.enter.prevent="sendMessage()" id="textbox" v-model="chatboxMessage"></textarea>
        <button class="col-xl-8 center-block btn-send" @click="sendMessage()">Send message</button>
    </div>
@@ -12,10 +8,8 @@
 
 <script>
     import ChatClientRequestBuilder from '../services/ChatClientRequestBuilder';
-    import Message from './Message.vue';
 
     export default {
-        components: { Message },
         data() {
             return{
                 messages: [],
@@ -26,9 +20,11 @@
                 chatboxMessage: ''
             }
         },
+
         created() {
             this.initWebsocketConnection();
         },
+
         methods: {
             initWebsocketConnection() {
                 this.websocket = new WebSocket("ws:my_token@" + window.location.host + "/ws/");
