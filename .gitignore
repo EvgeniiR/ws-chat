@@ -2,5 +2,5 @@
 /vendor
 app/DBConfig.php
 /node_modules
-app.js
-app.css
+/public/css
+/public/js
