@@ -13,6 +13,7 @@ use App\classes\Request\MessageRequest;
 use App\classes\Response\ErrorResponse;
 use App\classes\Response\LoginResponse;
 use App\classes\Response\MessagesResponse;
+use App\classes\Response\UsersResponse;
 use App\classes\User;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
@@ -110,6 +111,13 @@ class WebsocketServer
         }
 
         $this->ws->push($request->fd, $messagesResponse->getJson());
+
+        $usersResponse = new UsersResponse(UsersResponse::ACTION_NEW_USERS);
+        foreach ($this->usersRepository->getByIds($this->ws->connection_list()) as $user) {
+            $usersResponse->addUser($user);
+        }
+        $this->ws->push($request->fd, $usersResponse->getJson());
+
         echo "client-{$request->fd} is connected\n";
     }
 
@@ -162,6 +170,14 @@ class WebsocketServer
      * @param $id
      */
     private function onClose(int $id) {
+        $user = $this->usersRepository->get($id);
+        foreach ($this->ws->connections as $userId) {
+            $this->ws->push($userId, (
+                new UsersResponse(UsersResponse::ACTION_DISCONNECTED_USERS))
+                ->addUser($user)
+                ->getJson()
+            );
+        }
         $this->usersRepository->delete($id);
         echo "client-{$id} is closed\n";
     }
@@ -235,6 +251,16 @@ class WebsocketServer
         $user = new User($id, $username);
         $this->usersRepository->save($user);
 
+        foreach ($this->ws->connections as $userId) {
+            if($user->getId() !== $userId) {
+                $this->ws->push($userId, (
+                    new UsersResponse(UsersResponse::ACTION_NEW_USERS))
+                    ->addUser($user)
+                    ->getJson()
+                );
+            }
+        }
+
         $this->ws->push($id, (new LoginResponse(true, $username))->getJson());
     }
 
@@ -249,14 +275,5 @@ class WebsocketServer
             }
         }
         return false;
-    }
-
-    /**
-     * Check if user with specified ID is currently online
-     * @param int $id
-     * @return bool
-     */
-    private function isUserOnline(int $id) {
-        return (($key = array_search($id, $this->ws->connection_list())) !== false);
     }
 }
