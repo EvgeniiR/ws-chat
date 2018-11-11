@@ -34,7 +34,7 @@ class UsersResponse extends Response
     public function addUser(User $user) {
         $this->users[] = [
             'id' => $user->getId(),
-            'username' => $user->getUsername()
+            'name' => $user->getUsername()
         ];
         return $this;
     }
