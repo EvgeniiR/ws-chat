@@ -2,7 +2,7 @@
     <div>
         <div class="w-100" id="chatbox">
             <div v-for="(message) in messages">
-                <span v-text="formatTimestamp(message.dateTime) + ':' + message.message + '.' + message.username"></span>
+                <span v-text="formatTimestamp(message.dateTime) + ':' + message.username+ '.' + message.message"></span>
                 <br>
             </div>
         </div>
