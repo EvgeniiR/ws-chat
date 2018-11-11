@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="col-xl-8 center-block" id="chatbox">
+        <div class="w-100" id="chatbox">
             <div v-for="(message) in messages">
                 <span v-text="formatTimestamp(message.dateTime) + ':' + message.message + '.' + message.username"></span>
                 <br>

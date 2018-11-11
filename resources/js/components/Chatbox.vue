@@ -1,8 +1,17 @@
 <template>
-   <div>
-       <messages-view :messages="messages"></messages-view>
-       <textarea class="col-xl-8 center-block" @keydown.enter.prevent="sendMessage()" id="textbox" v-model="chatboxMessage"></textarea>
-       <button class="col-xl-8 center-block btn-send" @click="sendMessage()">Send message</button>
+   <div class="container">
+       <div class="row">
+           <div class="col-xl-8">
+               <messages-view :messages="messages"></messages-view>
+               <textarea class="w-100" @keydown.enter.prevent="sendMessage()" id="textbox" v-model="chatboxMessage"></textarea>
+               <button class="w-100 btn-send" @click="sendMessage()">Send message</button>
+           </div>
+           <div class="col-xl-4">
+               <div class="sticky-top">
+                   <users-table :users="users"></users-table>
+               </div>
+           </div>
+       </div>
    </div>
 </template>
 
@@ -17,6 +26,7 @@
                 chatClient: undefined,
                 authenticated: undefined,
                 username: undefined,
+                users: [],
                 chatboxMessage: ''
             }
         },
@@ -35,6 +45,8 @@
 
                 this.websocket.onopen = function () {
                     console.log('Connected!');
+                    self.users = [];
+                    self.messages = [];
                     self.authenticate();
                 };
 
@@ -44,7 +56,6 @@
                     } else {
                         console.log('Connection interrupted');
                     }
-
                     console.log('Code: ' + event.code + ' reason: ' + event.reason);
                     console.log('Trying to reconnect');
                     self.initWebsocketConnection();
@@ -92,6 +103,9 @@
                     case 'error':
                         alert('Error: ' + data.body.message);
                         break;
+                    case 'users':
+                        this.parseUsersResponse(data.body);
+                        break;
                 }
             },
 
@@ -116,6 +130,31 @@
                     this.chatboxMessage = '';
                 } else {
                     this.authenticate();
+                }
+            },
+
+            parseUsersResponse(responseBody) {
+                self = this;
+                switch (responseBody.action) {
+                    case 'new users':
+                        responseBody.users.forEach(function (connectedUser) {
+                            self.users.forEach(function (currentUser, index, arr) {
+                                if(Number(currentUser.id) === Number(connectedUser.id)) {
+                                    arr.splice(index, 1); // Fix doubling users
+                                }
+                            });
+                        });
+                        this.users = this.users.concat(responseBody.users);
+                        break;
+                    case 'disconnected':
+                        responseBody.users.forEach(function (disconnectedUser) {
+                            self.users.forEach(function (currentUser, index, arr) {
+                                if(Number(currentUser.id) === Number(disconnectedUser.id)) {
+                                    arr.splice(index, 1);
+                                }
+                            });
+                        });
+                        break;
                 }
             }
         }

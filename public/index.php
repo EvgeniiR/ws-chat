@@ -9,9 +9,7 @@
 </head>
 <body>
     <div id="app">
-        <div class="container-fluid">
-            <chatbox></chatbox>
-        </div>
+        <chatbox></chatbox>
     </div>
     <script src="./js/app.js"></script>
     <link rel="stylesheet" href="./css/app.css">
