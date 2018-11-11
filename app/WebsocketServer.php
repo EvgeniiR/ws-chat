@@ -252,13 +252,11 @@ class WebsocketServer
         $this->usersRepository->save($user);
 
         foreach ($this->ws->connections as $userId) {
-            if($user->getId() !== $userId) {
-                $this->ws->push($userId, (
-                    new UsersResponse(UsersResponse::ACTION_NEW_USERS))
-                    ->addUser($user)
-                    ->getJson()
-                );
-            }
+            $this->ws->push($userId, (
+                new UsersResponse(UsersResponse::ACTION_NEW_USERS))
+                ->addUser($user)
+                ->getJson()
+            );
         }
 
         $this->ws->push($id, (new LoginResponse(true, $username))->getJson());
