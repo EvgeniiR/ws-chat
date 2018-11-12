@@ -2,7 +2,7 @@
     <div>
         <div class="w-100" id="chatbox">
             <div v-for="(message) in messages">
-                <span v-text="formatTimestamp(message.dateTime) + ':' + message.username+ '.' + message.message"></span>
+                <span v-html="formatTimestamp(message.dateTime) + ':' + message.username+ '.' + formatMessage(message.message)"></span>
                 <br>
             </div>
         </div>
@@ -56,6 +56,12 @@
                 {
                     this.chatbox.scrollTop = userScrollMaxValue;
                 }
+            },
+
+            formatMessage(message) {
+                var urlRegexPattern = '(?!mailto:)(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?';
+                var urlRegex = new RegExp(urlRegexPattern, 'ugi');
+                return message.replace(urlRegex, '<a href="$&">$&</a>');
             }
         }
     }
