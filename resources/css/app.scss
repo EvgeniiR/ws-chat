@@ -5,6 +5,14 @@
   height: 80vh;
 }
 
+#chatbox div{
+  overflow: hidden;
+}
+
+#chatbox div span{
+  word-wrap: break-spaces;
+}
+
 #users-table {
   width: 100%;
   border-spacing: 7px 5px;
