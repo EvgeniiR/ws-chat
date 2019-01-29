@@ -10,10 +10,10 @@ use App\classes\Repositories\MessagesRepository;
 use App\classes\Repositories\UsersRepository;
 use App\classes\Request\LoginRequest;
 use App\classes\Request\MessageRequest;
-use App\classes\Response\ErrorResponse;
-use App\classes\Response\LoginResponse;
-use App\classes\Response\MessagesResponse;
-use App\classes\Response\UsersResponse;
+use App\classes\Response\ErrorJsonReponse;
+use App\classes\Response\LoginJsonReponse;
+use App\classes\Response\MessagesJsonReponse;
+use App\classes\Response\UsersJsonReponse;
 use App\classes\User;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
@@ -104,7 +104,7 @@ class WebsocketServer
      * @param Request $request
      */
     private function onConnection(Request $request) {
-        $messagesResponse = new MessagesResponse();
+        $messagesResponse = new MessagesJsonReponse();
 
         foreach ($this->messagesRepository->getAll() as $message) {
             $messagesResponse->addMessage($message);
@@ -112,7 +112,7 @@ class WebsocketServer
 
         $this->ws->push($request->fd, $messagesResponse->getJson());
 
-        $usersResponse = new UsersResponse(UsersResponse::ACTION_NEW_USERS);
+        $usersResponse = new UsersJsonReponse(UsersJsonReponse::ACTION_NEW_USERS);
         foreach ($this->usersRepository->getByIds($this->ws->connection_list()) as $user) {
             $usersResponse->addUser($user);
         }
@@ -130,7 +130,7 @@ class WebsocketServer
 
         $decodedData = json_decode($frame->data);
         if( ! isset($decodedData->type) ) {
-            $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Can`t parse request type'))->getJson());
+            $this->ws->push($frame->fd, (new ErrorJsonReponse('Failed to process request. Can`t parse request type'))->getJson());
             return;
         }
 
@@ -143,14 +143,14 @@ class WebsocketServer
                 $this->processMessageRequest($frame->fd, $decodedData);
                 break;
             default:
-                $this->ws->push($frame->fd, (new ErrorResponse('Failed to process request. Unknown request type'))->getJson());
+                $this->ws->push($frame->fd, (new ErrorJsonReponse('Failed to process request. Unknown request type'))->getJson());
                 break;
         }
     }
 
     public function processLoginRequest(int $userId, $data) {
         if( ! isset($data->username) ) {
-            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse username'))->getJson());
+            $this->ws->push($userId, (new ErrorJsonReponse('Failed to process request. Can`t parse username'))->getJson());
             return;
         }
         $loginRequest = new LoginRequest($userId, $data->username);
@@ -159,7 +159,7 @@ class WebsocketServer
 
     public function processMessageRequest(int $userId, $data) {
         if( ! isset($data->message) ) {
-            $this->ws->push($userId, (new ErrorResponse('Failed to process request. Can`t parse message'))->getJson());
+            $this->ws->push($userId, (new ErrorJsonReponse('Failed to process request. Can`t parse message'))->getJson());
             return;
         }
         $messageRequest = new MessageRequest($userId, $data->message);
@@ -172,11 +172,11 @@ class WebsocketServer
     private function onClose(int $id) {
         $user = $this->usersRepository->get($id);
         foreach ($this->ws->connections as $userId) {
-            $this->ws->push($userId, (
-                new UsersResponse(UsersResponse::ACTION_DISCONNECTED_USERS))
+            $response =
+                (new UsersJsonReponse(UsersJsonReponse::ACTION_DISCONNECTED_USERS))
                 ->addUser($user)
-                ->getJson()
-            );
+                ->getJson();
+            $this->ws->push($userId, $response);
         }
         $this->usersRepository->delete($id);
         echo "client-{$id} is closed\n";
@@ -186,18 +186,17 @@ class WebsocketServer
      * @param int $id
      */
     private function returnUnauthorized(int $id) {
-        $this->ws->push($id, (new ErrorResponse('Unauthorized!'))->getJson());
+        $this->ws->push($id, (new ErrorJsonReponse('Unauthorized!'))->getJson());
     }
 
     /**
-     * @param int $userId
      * @param MessageRequest $messageRequest
      */
     function processMessage(MessageRequest $messageRequest) {
         $userId = $messageRequest->getUserId();
         $message = $messageRequest->getMessage();
         if (!$this->requestsLimiter->checkIsRequestAllowed($userId)) {
-            $this->ws->push($userId, (new ErrorResponse('Too many messages! Try again later.'))->getJson());
+            $this->ws->push($userId, (new ErrorJsonReponse('Too many messages! Try again later.'))->getJson());
             return;
         }
 
@@ -211,7 +210,7 @@ class WebsocketServer
         $spamFilter->checkIsMessageTextCorrect($message);
         $messageErrors = $spamFilter->getErrors();
         if (!empty($messageErrors)) {
-            $response = new ErrorResponse($messageErrors[0]);
+            $response = new ErrorJsonReponse($messageErrors[0]);
             $this->ws->push($userId, $response->getJson());
             return;
         }
@@ -221,30 +220,29 @@ class WebsocketServer
 
         $this->messagesRepository->save($message);
 
-        $response = (new MessagesResponse())->addMessage($message)->getJson();
+        $response = (new MessagesJsonReponse())->addMessage($message)->getJson();
         foreach ($this->ws->connections as $userId) {
             $this->ws->push($userId, $response);
         }
     }
 
     /**
-     * @param int $id
      * @param LoginRequest $loginRequest
      */
     private function registerNewUser(LoginRequest $loginRequest) {
         $id = $loginRequest->getUserId();
         $username = PurifierHelper::purify((string)$loginRequest->getUsername());
         if ($user = $this->usersRepository->get($id) !== false) {
-            $this->ws->push($id, (new ErrorResponse('You are already logged in'))->getJson());
+            $this->ws->push($id, (new ErrorJsonReponse('You are already logged in'))->getJson());
         }
 
         if (empty(trim($username))) {
-            $this->ws->push($id, (new LoginResponse(false, $username, 'username cannot be empty'))->getJson());
+            $this->ws->push($id, (new LoginJsonReponse(false, $username, 'username cannot be empty'))->getJson());
             return;
         }
 
         if ($this->isUsernameCurrentlyTaken($username)) {
-            $this->ws->push($id, (new LoginResponse(false, $username, 'Choose another name!'))->getJson());
+            $this->ws->push($id, (new LoginJsonReponse(false, $username, 'Choose another name!'))->getJson());
             return;
         }
 
@@ -253,13 +251,13 @@ class WebsocketServer
 
         foreach ($this->ws->connections as $userId) {
             $this->ws->push($userId, (
-                new UsersResponse(UsersResponse::ACTION_NEW_USERS))
+                new UsersJsonReponse(UsersJsonReponse::ACTION_NEW_USERS))
                 ->addUser($user)
                 ->getJson()
             );
         }
 
-        $this->ws->push($id, (new LoginResponse(true, $username))->getJson());
+        $this->ws->push($id, (new LoginJsonReponse(true, $username))->getJson());
     }
 
     /**

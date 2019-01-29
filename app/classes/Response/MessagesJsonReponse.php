@@ -6,7 +6,7 @@ namespace App\classes\Response;
 use App\classes\Message;
 use App\classes\Helpers\PurifierHelper;
 
-class MessagesResponse extends Response
+class MessagesJsonReponse extends JsonReponse
 {
     private $messages = [];
 
@@ -20,7 +20,7 @@ class MessagesResponse extends Response
 
     /**
      * @param Message $message
-     * @return MessagesResponse
+     * @return MessagesJsonReponse
      */
     public function addMessage(Message $message) {
         $purifiedMessage = PurifierHelper::purify($message->getMessage());

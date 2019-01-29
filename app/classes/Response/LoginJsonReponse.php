@@ -3,7 +3,7 @@
 namespace App\classes\Response;
 
 
-class LoginResponse extends Response
+class LoginJsonReponse extends JsonReponse
 {
     private $result;
 

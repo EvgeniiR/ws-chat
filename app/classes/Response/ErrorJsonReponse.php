@@ -3,7 +3,7 @@
 namespace App\classes\Response;
 
 
-class ErrorResponse extends Response
+class ErrorJsonReponse extends JsonReponse
 {
     private $message;
 

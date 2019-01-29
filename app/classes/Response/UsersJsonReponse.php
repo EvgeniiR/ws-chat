@@ -4,7 +4,7 @@ namespace App\classes\Response;
 
 use App\classes\User;
 
-class UsersResponse extends Response
+class UsersJsonReponse extends JsonReponse
 {
     const ACTION_NEW_USERS = 'new users';
     const ACTION_DISCONNECTED_USERS = 'disconnected';
@@ -29,7 +29,7 @@ class UsersResponse extends Response
 
     /**
      * @param User $user
-     * @return UsersResponse
+     * @return UsersJsonReponse
      */
     public function addUser(User $user) {
         $this->users[] = [

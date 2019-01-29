@@ -3,7 +3,7 @@
 namespace App\classes\Response;
 
 
-abstract class Response
+abstract class JsonReponse
 {
     abstract protected function getType(): string;
 
