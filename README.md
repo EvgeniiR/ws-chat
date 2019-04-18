@@ -1,5 +1,4 @@
 Online chat on websocket using Swoole (https://www.swoole.co.uk/)
-Working example here: http://62.109.21.96/
 
 For using on local machine:
 1. pecl install swoole
