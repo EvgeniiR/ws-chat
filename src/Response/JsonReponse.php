@@ -1,6 +1,6 @@
 <?php
 
-namespace App\classes\Response;
+namespace App\Response;
 
 
 abstract class JsonReponse

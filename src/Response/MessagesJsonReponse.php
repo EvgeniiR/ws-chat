@@ -1,10 +1,10 @@
 <?php
 
-namespace App\classes\Response;
+namespace App\Response;
 
 
-use App\classes\Message;
-use App\classes\Helpers\PurifierHelper;
+use App\Message;
+use App\Helpers\PurifierHelper;
 
 class MessagesJsonReponse extends JsonReponse
 {

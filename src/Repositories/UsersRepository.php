@@ -1,9 +1,9 @@
 <?php
 
-namespace App\classes\Repositories;
+namespace App\Repositories;
 
 
-use App\classes\User;
+use App\User;
 use swoole_table;
 
 class UsersRepository

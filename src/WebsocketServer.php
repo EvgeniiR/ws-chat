@@ -2,19 +2,19 @@
 
 namespace App;
 
-use App\classes\Helpers\PurifierHelper;
-use App\classes\Helpers\RequestLimiter;
-use App\classes\Helpers\SpamFilter;
-use App\classes\Message;
-use App\classes\Repositories\MessagesRepository;
-use App\classes\Repositories\UsersRepository;
-use App\classes\Request\LoginRequest;
-use App\classes\Request\MessageRequest;
-use App\classes\Response\ErrorJsonReponse;
-use App\classes\Response\LoginJsonReponse;
-use App\classes\Response\MessagesJsonReponse;
-use App\classes\Response\UsersJsonReponse;
-use App\classes\User;
+use App\Helpers\PurifierHelper;
+use App\Helpers\RequestLimiter;
+use App\Helpers\SpamFilter;
+use App\Message;
+use App\Repositories\MessagesRepository;
+use App\Repositories\UsersRepository;
+use App\Request\LoginRequest;
+use App\Request\MessageRequest;
+use App\Response\ErrorJsonReponse;
+use App\Response\LoginJsonReponse;
+use App\Response\MessagesJsonReponse;
+use App\Response\UsersJsonReponse;
+use App\User;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
 

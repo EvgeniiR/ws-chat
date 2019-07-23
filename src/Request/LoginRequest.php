@@ -1,6 +1,6 @@
 <?php
 
-namespace App\classes\Request;
+namespace App\Request;
 
 class LoginRequest
 {

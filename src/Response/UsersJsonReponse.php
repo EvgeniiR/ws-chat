@@ -1,8 +1,8 @@
 <?php
 
-namespace App\classes\Response;
+namespace App\Response;
 
-use App\classes\User;
+use App\User;
 
 class UsersJsonReponse extends JsonReponse
 {
