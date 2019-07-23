@@ -1,0 +1,4 @@
+[Unit]
+Description=App
+Type=simple
+PIDFile=/work/www/myunit/shared/tmp/pids/service.pid

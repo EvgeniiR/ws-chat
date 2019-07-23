@@ -1,0 +1,30 @@
+version: '3'
+services:
+  php:
+    build: build/php
+    container_name: ws_chat_php
+    expose:
+      - '9000'
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html:cached
+      - ./logs:/var/log
+  db:
+    image: postgres:11.2
+    restart: always
+    container_name: ws_chat_db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+  workspace:
+    build: build/workspace
+    restart: always
+    container_name: ws_chat_workspace
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log/nginx

@@ -15,9 +15,9 @@ class DatabaseHelper
         PDO::ATTR_EMULATE_PREPARES => TRUE,
     );
 
-    const DSN = 'mysql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE . ';charset=' . DBConfig::CHARSET;
+    const DSN = 'pgsql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE;
 
-    const MySQL_PING_INTERVAL = 1000 * 60 * 5;
+    const DB_PING_INTERVAL = 1000 * 60 * 5;
 
     /**
      * @var int|null
@@ -44,7 +44,7 @@ class DatabaseHelper
      */
     private static function initPdo() {
         if (self::$timerId === null || (!Timer::exists(self::$timerId))) {
-            self::$timerId = Timer::tick(self::MySQL_PING_INTERVAL, function () {
+            self::$timerId = Timer::tick(self::DB_PING_INTERVAL, function () {
                 self::ping();
             });
         }
