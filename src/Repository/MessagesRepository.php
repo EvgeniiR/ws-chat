@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repository;
 
 
 use App\Message;
-use App\Helpers\DatabaseHelper;
+use App\Helper\DatabaseHelper;
 
 class MessagesRepository
 {

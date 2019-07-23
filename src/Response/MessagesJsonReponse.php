@@ -4,7 +4,7 @@ namespace App\Response;
 
 
 use App\Message;
-use App\Helpers\PurifierHelper;
+use App\Helper\PurifierHelper;
 
 class MessagesJsonReponse extends JsonReponse
 {

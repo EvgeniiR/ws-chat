@@ -2,12 +2,12 @@
 
 namespace App;
 
-use App\Helpers\PurifierHelper;
-use App\Helpers\RequestLimiter;
-use App\Helpers\SpamFilter;
+use App\Helper\PurifierHelper;
+use App\Helper\RequestLimiter;
+use App\Helper\SpamFilter;
 use App\Message;
-use App\Repositories\MessagesRepository;
-use App\Repositories\UsersRepository;
+use App\Repository\MessagesRepository;
+use App\Repository\UsersRepository;
 use App\Request\LoginRequest;
 use App\Request\MessageRequest;
 use App\Response\ErrorJsonReponse;
