@@ -3,7 +3,8 @@
     "require": {
       "ext-json": "*",
         "ezyang/htmlpurifier": "^4.10",
-      "ext-pdo": "*"
+      "ext-pdo": "*",
+        "symfony/console": "^4.3"
     },
     "autoload": {
         "psr-4": {

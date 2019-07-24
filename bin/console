@@ -1,0 +1,10 @@
+<?php
+require __DIR__ . '../vendor/autoload.php';
+
+use App\Commands\StartAppCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->add(new StartAppCommand());
+
+$application->run();
