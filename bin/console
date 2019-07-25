@@ -1,10 +1,18 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
+define('SRCDIR', dirname(__DIR__) . '/src/');
+
+use App\Commands\CreateDatabaseCommand;
+use App\Commands\CreateMigrationCommand;
+use App\Commands\MigrateCommand;
 use App\Commands\StartAppCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->add(new StartAppCommand());
+$application->add(new CreateMigrationCommand());
+$application->add(new CreateDatabaseCommand());
+$application->add(new MigrateCommand());
 
 $application->run();

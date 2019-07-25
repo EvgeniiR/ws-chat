@@ -22,6 +22,8 @@ ENV TERM xterm
 RUN apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:ondrej/php
 
+RUN groupadd --system user --gid 1000 && useradd --no-log-init --system --gid 1000 --uid 1000 user
+
 #
 #--------------------------------------------------------------------------
 # Software's Installation

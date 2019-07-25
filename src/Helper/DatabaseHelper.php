@@ -9,15 +9,9 @@ use Swoole\Timer;
 
 class DatabaseHelper
 {
-    const OPT = array(
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => TRUE,
-    );
+    private const DSN = 'pgsql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE;
 
-    const DSN = 'pgsql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE;
-
-    const DB_PING_INTERVAL = 1000 * 60 * 5;
+    private const DB_PING_INTERVAL = 1000 * 60 * 5;
 
     /**
      * @var int|null
@@ -49,7 +43,7 @@ class DatabaseHelper
             });
         }
 
-        self::$pdo = new PDO(self::DSN, DBConfig::USER, DBConfig::PASSWORD, self::OPT);
+        self::$pdo = new PDO(self::DSN, DBConfig::USER, DBConfig::PASSWORD, DBConfig::OPT);
     }
 
     /**
@@ -57,7 +51,7 @@ class DatabaseHelper
      */
     private static function ping() {
         try {
-            self::$pdo->query('SELECT 1');
+            self::$pdo->exec('SELECT 1');
         } catch (PDOException $e) {
             self::initPdo();
         }
