@@ -1,7 +1,5 @@
 FROM php:7.2-fpm
 
-COPY ./composer.json /var/www/html/composer.json
-
 RUN apt-get update
 
 RUN set -ex && \
