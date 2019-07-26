@@ -33,6 +33,7 @@ RUN groupadd --system user --gid 1000 && useradd --no-log-init --system --gid 10
 # Install "PHP Extentions", "libraries", "Software's"
 RUN apt-get update && \
     apt-get upgrade -y && \
+    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y --allow-downgrades --allow-remove-essential \
         --allow-change-held-packages \
         php7.3-cli \
@@ -51,6 +52,7 @@ RUN apt-get update && \
         php7.3-memcached \
         php7.3-gd \
         php7.3-dev \
+        nodejs \
         pkg-config \
         libcurl4-openssl-dev \
         libedit-dev \
@@ -74,6 +76,8 @@ RUN apt-get update && \
 RUN curl -s http://getcomposer.org/installer | php && \
     echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
     mv composer.phar /usr/local/bin/composer
+
+WORKDIR /var/www/html/ws-chat
 
 # Source the bash
 RUN sh

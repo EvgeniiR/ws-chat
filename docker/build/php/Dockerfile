@@ -21,7 +21,6 @@ RUN touch /usr/local/etc/php/conf.d/swoole.ini && \
 
 RUN docker-php-ext-install pdo_pgsql
 
-WORKDIR /var/www/html/
+WORKDIR /var/www/html/ws-chat
 
 EXPOSE 8101
-CMD ["/usr/local/bin/php", "/var/www/html/ws_start_server.php"]

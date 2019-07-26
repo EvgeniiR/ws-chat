@@ -5,10 +5,11 @@ services:
     container_name: ws_chat_php
     expose:
       - '9000'
+      - '9502'
     depends_on:
       - db
     volumes:
-      - ./../:/var/www/html:cached
+      - ./../:/var/www/html/ws-chat:cached
       - ./logs:/var/log
   db:
     image: postgres:11.2
@@ -24,6 +25,18 @@ services:
     restart: always
     container_name: ws_chat_workspace
     depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log/nginx
+  nginx:
+    build: build/nginx
+    restart: always
+    container_name: ws_chat_nginx
+    ports:
+      - 81:80
+    depends_on:
+      - php
       - db
     volumes:
       - ./../:/var/www/html/ws-chat:cached
