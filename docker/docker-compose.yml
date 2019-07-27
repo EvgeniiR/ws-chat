@@ -1,11 +1,21 @@
 version: '3'
 services:
-  php:
+  ws:
     build: build/php
-    container_name: ws_chat_php
+    container_name: ws_chat_ws
+    expose:
+      - '9502'
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log
+    command: php /var/www/html/ws-chat/bin/console app:start
+  php-fpm:
+    build: build/php
+    container_name: ws_chat_fpm
     expose:
       - '9000'
-      - '9502'
     depends_on:
       - db
     volumes:
@@ -36,7 +46,7 @@ services:
     ports:
       - 81:80
     depends_on:
-      - php
+      - php-fpm
       - db
     volumes:
       - ./../:/var/www/html/ws-chat:cached
