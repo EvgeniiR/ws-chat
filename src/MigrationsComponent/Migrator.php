@@ -41,7 +41,8 @@ class Migrator
 
     /**
      * @param int $requiredVersion
-     * Pass 0 version to drop all migrations, pass null to aply all new migrations
+     * Pass 0 version to drop all migrations, pass null to apply all new migrations
+     * @throws \ReflectionException
      * @throws MigratorException
      */
     public function updateSchema(?int $requiredVersion): string {

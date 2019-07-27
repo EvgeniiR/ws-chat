@@ -12,7 +12,7 @@ class CreateDatabaseCommand extends Command
 {
     protected static $defaultName = 'app:database:create';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription(<<<'TEXT'
 Run to create database when installing the project. Command is idempotent and shouldn`t harm or clean up an existing database by accidental start-up.
@@ -30,7 +30,7 @@ TEXT
         if ($dbCount === 0) {
             $res = $pdo->exec("CREATE DATABASE \"$db\";");
             if ($res === false) {
-                $output->writeln(print_r($pdo->errorInfo(), 1));
+                $output->writeln(print_r($pdo->errorInfo(), true));
             } else {
                 $output->writeln('Success.');
             }
