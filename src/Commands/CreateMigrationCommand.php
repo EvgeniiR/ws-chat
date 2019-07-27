@@ -32,7 +32,9 @@ TEXT
 <?php
 namespace {$migrationsNamespace};
 
-class $className implements Migration {
+use App\MigrationsComponent\Migration;
+
+class $className extends Migration {
     /**
      * @return string SQL
      */

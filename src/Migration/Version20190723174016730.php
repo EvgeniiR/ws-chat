@@ -1,7 +1,9 @@
 <?php
 namespace App\Migration;
 
-class Version20190723174016730 implements Migration {
+use App\MigrationsComponent\Migration;
+
+class Version20190723174016730 extends Migration {
     /**
      * @return string SQL
      */
