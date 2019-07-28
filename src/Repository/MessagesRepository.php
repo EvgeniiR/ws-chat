@@ -8,6 +8,9 @@ use App\Helper\DatabaseHelper;
 
 class MessagesRepository
 {
+    /**
+     * @var \PDO
+     */
     private $pdo;
 
     /**
@@ -19,8 +22,9 @@ class MessagesRepository
 
     /**
      * @return Message[]
+     * @throws \Exception
      */
-    public function getAll() {
+    public function getAll():array {
         $stmt = $this->pdo->query('SELECT * FROM messages ORDER BY date_time DESC LIMIT 100');
         $messages = [];
         foreach ($stmt->fetchAll() as $row) {
@@ -32,7 +36,7 @@ class MessagesRepository
     /**
      * @param Message $message
      */
-    public function save(Message $message) {
+    public function save(Message $message): void {
         $stmt = $this->pdo->prepare("INSERT INTO messages (username, message) VALUES (:username, :message)");
         $stmt->execute(array('username' => $message->getUsername(), 'message' => $message->getMessage()));
     }

@@ -48,7 +48,7 @@ class UsersRepository
     /**
      * @param int $userId
      */
-    public function delete(int $userId) {
+    public function delete(int $userId): void {
         $this->users_table->del($userId);
     }
 
@@ -56,7 +56,7 @@ class UsersRepository
      * Save user to table in memory;
      * @param User $user
      */
-    public function save(User $user) {
+    public function save(User $user): void {
         $result = $this->users_table->set($user->getId(), ['username' => $user->getUsername()]);
         if ($result === false) {
             $this->reCreateUsersTable();
@@ -64,7 +64,7 @@ class UsersRepository
         }
     }
 
-    public function reCreateUsersTable() {
+    public function reCreateUsersTable(): void {
         if (isset($this->users_table)) {
             $this->users_table->destroy();
         }

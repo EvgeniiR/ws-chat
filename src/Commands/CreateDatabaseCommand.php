@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\DBConfig;
+use App\Config;
 use PDO;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,9 +22,9 @@ TEXT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dsn = 'pgsql:host=' . DBConfig::HOST;
-        $pdo = new PDO($dsn, DBConfig::USER, DBConfig::PASSWORD, DBConfig::OPT);
-        $db = DBConfig::DATABASE;
+        $dsn = 'pgsql:host=' . Config::HOST;
+        $pdo = new PDO($dsn, Config::USER, Config::PASSWORD, Config::OPT);
+        $db = Config::DATABASE;
 
         $dbCount = $pdo->query("SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('$db')")->rowCount();
         if ($dbCount === 0) {

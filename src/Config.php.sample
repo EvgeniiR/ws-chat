@@ -1,0 +1,21 @@
+<?php
+namespace App;
+
+use PDO;
+
+class Config
+{
+    const OPT = array(
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => TRUE,
+    );
+
+    const HOST = 'db';
+    const PORT = 3306;
+    const USER = 'test';
+    const PASSWORD = 'test';
+    const DATABASE = 'ws-chat';
+
+    const SRCDIR = __DIR__;
+}

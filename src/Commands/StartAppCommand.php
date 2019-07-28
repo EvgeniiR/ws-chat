@@ -11,7 +11,7 @@ class StartAppCommand extends Command
 {
     protected static $defaultName = 'app:start';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Start the application(Chat)');
     }

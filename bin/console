@@ -1,8 +1,6 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-define('SRCDIR', dirname(__DIR__) . '/src/');
-
 use App\Commands\CreateDatabaseCommand;
 use App\Commands\CreateMigrationCommand;
 use App\Commands\MigrateCommand;

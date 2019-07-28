@@ -2,33 +2,31 @@
 
 namespace App\Helper;
 
-use App\DBConfig;
+use App\Config;
 use PDO;
 use PDOException;
 use Swoole\Timer;
 
 class DatabaseHelper
 {
-    private const DSN = 'pgsql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE;
+    private const DSN = 'pgsql:host=' . Config::HOST . ';dbname=' . Config::DATABASE;
 
     private const DB_PING_INTERVAL = 1000 * 60 * 5;
 
     /**
      * @var int|null
      */
-    private static $timerId = null;
+    private static $timerId;
 
     /**
-     * @var PDO
+     * @var PDO|null
      */
-    protected static $pdo = null;
+    protected static $pdo;
 
-    /**
-     * @return PDO
-     */
-    public static function pdoInstance() {
+
+    public static function pdoInstance(): PDO {
         if (self::$pdo === null) {
-            self::initPdo();
+            self::$pdo = self::initPdo();
         }
         return self::$pdo;
     }
@@ -36,24 +34,27 @@ class DatabaseHelper
     /**
      * Init new Connection, and ping DB timer function
      */
-    private static function initPdo() {
+    private static function initPdo(): PDO {
         if (self::$timerId === null || (!Timer::exists(self::$timerId))) {
             self::$timerId = Timer::tick(self::DB_PING_INTERVAL, function () {
                 self::ping();
             });
         }
 
-        self::$pdo = new PDO(self::DSN, DBConfig::USER, DBConfig::PASSWORD, DBConfig::OPT);
+        return new PDO(self::DSN, Config::USER, Config::PASSWORD, Config::OPT);
     }
 
     /**
      * Ping database to maintain the connection
      */
-    private static function ping() {
+    private static function ping(): void {
         try {
+            if (self::$pdo === null) {
+                self::$pdo = self::initPdo();
+            }
             self::$pdo->exec('SELECT 1');
         } catch (PDOException $e) {
-            self::initPdo();
+            self::$pdo = self::initPdo();
         }
     }
 }

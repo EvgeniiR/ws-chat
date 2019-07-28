@@ -55,7 +55,7 @@ class RequestLimiter
     /**
      * @param int $userId
      */
-    private function addRecord(int $userId) {
+    private function addRecord(int $userId): void {
         $recordsCount = $this->userIds->stats()['queue_num'];
 
         if ($recordsCount >= self::MAX_SAVED_RECORDS_COUNT) {

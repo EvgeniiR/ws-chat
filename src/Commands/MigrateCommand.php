@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\DBConfig;
+use App\Config;
 use App\MigrationsComponent\Migrator;
 use PDO;
 use Symfony\Component\Console\Command\Command;
@@ -15,32 +15,27 @@ class MigrateCommand extends Command
 {
     protected static $defaultName = 'app:migration:migrate';
 
-    private $pdo;
-
-    public function __construct(string $name = null)
-    {
-        parent::__construct($name);
-        $dsn = 'pgsql:host=' . DBConfig::HOST . ';dbname=' . DBConfig::DATABASE;
-        $this->pdo = new PDO($dsn, DBConfig::USER, DBConfig::PASSWORD, DBConfig::OPT);
-    }
-
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Execute a migration to a specified version or the latest available version.');
     }
 
     /**
      * @throws \App\MigrationsComponent\Internal\MigratorException
+     * @throws \ReflectionException
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $migrationsFolderPath = SRCDIR . 'Migration/';
-        $migrator = new Migrator($this->pdo, $migrationsFolderPath);
+        $dsn = 'pgsql:host=' . Config::HOST . ';dbname=' . Config::DATABASE;
+        $pdo = new PDO($dsn, Config::USER, Config::PASSWORD, Config::OPT);
+        $migrationsFolderPath = Config::SRCDIR . '/Migration/';
+        $migrator = new Migrator($pdo, $migrationsFolderPath);
         $result = $migrator->updateSchema($this->askVersionUserWant($input, $output));
         $output->writeln($result);
     }
 
-    protected function askVersionUserWant(InputInterface $input, OutputInterface $output): ?int
+    private function askVersionUserWant(InputInterface $input, OutputInterface $output): ?int
     {
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');

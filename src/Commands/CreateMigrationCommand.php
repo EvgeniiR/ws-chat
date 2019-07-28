@@ -11,7 +11,7 @@ class CreateMigrationCommand extends Command
 {
     protected static $defaultName = 'app:migration:create';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription(<<<'TEXT'
 Creates new migration in migrations folder

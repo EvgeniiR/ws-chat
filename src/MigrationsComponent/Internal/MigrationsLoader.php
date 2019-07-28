@@ -21,14 +21,19 @@ class MigrationsLoader
 
     /**
      * @return Migration[] [version(int) => Migration class instance]
+     * @throws \ReflectionException
      * @throws MigratorException
      */
     public function loadAllMigrations(): array {
         $migrationFiles = [];
         $scandir = scandir($this->migrationsFolderPath);
         foreach (array_diff($scandir, ['.', '..']) as $filename) {
+            /**
+             * @psalm-var class-string<Migration>
+             * @var Migration $fullClassName
+             */
             $fullClassName = $this->getFullClassName($filename);
-            $migrationFiles[$fullClassName::currentVersion()] = $filename;
+            $migrationFiles[$fullClassName::currentVersion()] = $fullClassName;
         }
 
         $res = ksort($migrationFiles);
@@ -38,15 +43,16 @@ class MigrationsLoader
 
         $migrations = [];
         $prevVersion = 0;
-        foreach ($migrationFiles as $version => $migrationFile) {
-            $fullClassName = $this->getFullClassName($filename);
-            /** @var Migration $migration */
+        foreach ($migrationFiles as $version => $fullClassName) {
             $migrations[$version] = new $fullClassName($prevVersion);
             $prevVersion = $version;
         }
         return $migrations;
     }
 
+    /**
+     * @throws MigratorException
+     */
     private function getFullClassName(string $migrationFileName): string
     {
         $migrationsNamespace = 'App\Migration';
@@ -55,11 +61,10 @@ class MigrationsLoader
             throw new MigratorException('Incorrect migration filename');
         }
         $className = $matches[1];
-        $fullClassName = $migrationsNamespace . '\\' . $className;
-        return $fullClassName;
+        return $migrationsNamespace . '\\' . $className;
     }
 
-    private function isMigrationFile($filename): bool
+    private function isMigrationFile(string $filename): bool
     {
         return (bool)preg_match('/^Version\d+\.php$/', $filename);
     }

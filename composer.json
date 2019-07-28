@@ -10,5 +10,8 @@
         "psr-4": {
             "App\\": "src/"
         }
+    },
+    "require-dev": {
+        "vimeo/psalm": "^3.4"
     }
 }

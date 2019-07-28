@@ -33,18 +33,19 @@ class SchemaUpdater
      */
     public function migrateToVersion(?int $requiredVersion): string
     {
+        $migrations = $this->loader->loadAllMigrations();
         $currentVersion = $this->schemaVersionProvider->getCurrentSchemaVersion();
+        $latestVersion = (int)max(array_keys($migrations));
+        $requiredVersion = $requiredVersion ?? $latestVersion;
+
         if ($requiredVersion === $currentVersion) {
             return MigratorResultText::REQUIRED_AND_CURRENT_VERSION_ARE_SAME;
         }
 
-        $migrations = $this->loader->loadAllMigrations();
-        if(!array_key_exists($requiredVersion, $migrations) && $requiredVersion !== 0 && $requiredVersion !== null) {
+        if(!array_key_exists($requiredVersion, $migrations) && $requiredVersion !== 0) {
             throw new MigratorException('Incorrect input. Specified version not found');
         }
 
-        $latestVersion = max(array_keys($migrations));
-        $requiredVersion = $requiredVersion === null ? $latestVersion : $requiredVersion;
 
         if ($requiredVersion > $currentVersion) {
             $migrationsToUp = array_filter($migrations, function (int $version) use ($currentVersion, $requiredVersion) {
@@ -63,7 +64,7 @@ class SchemaUpdater
         }
 
         if ($requiredVersion < $currentVersion) {
-            $migrationsToRevert = array_filter($migrations, function ($version) use ($currentVersion, $requiredVersion) {
+            $migrationsToRevert = array_filter($migrations, function (int $version) use ($currentVersion, $requiredVersion) {
                 return ($version <= $currentVersion && $version > $requiredVersion);
             }, ARRAY_FILTER_USE_KEY);
 
