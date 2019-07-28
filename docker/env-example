@@ -1,4 +1,4 @@
 # cp ./env-example ./.env
-DB_USER=dbuser
-DB_PASS=dbpass
+DB_USER=test
+DB_PASS=test
 PHP_INI_DIR=/usr/local/etc/php
