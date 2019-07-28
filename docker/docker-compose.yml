@@ -1,0 +1,53 @@
+version: '3'
+services:
+  ws:
+    build: build/php
+    container_name: ws_chat_ws
+    expose:
+      - '9502'
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log
+    command: php /var/www/html/ws-chat/bin/console app:start
+  php-fpm:
+    build: build/php
+    container_name: ws_chat_fpm
+    expose:
+      - '9000'
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log
+  db:
+    image: postgres:11.2
+    restart: always
+    container_name: ws_chat_db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+  workspace:
+    build: build/workspace
+    restart: always
+    container_name: ws_chat_workspace
+    depends_on:
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log/nginx
+  nginx:
+    build: build/nginx
+    restart: always
+    container_name: ws_chat_nginx
+    ports:
+      - 81:80
+    depends_on:
+      - php-fpm
+      - db
+    volumes:
+      - ./../:/var/www/html/ws-chat:cached
+      - ./logs:/var/log/nginx
