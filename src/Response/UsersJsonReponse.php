@@ -9,7 +9,13 @@ class UsersJsonReponse extends JsonReponse
     const ACTION_NEW_USERS = 'new users';
     const ACTION_DISCONNECTED_USERS = 'disconnected';
 
+    /**
+     * @var string
+     */
     private $action;
+    /**
+     * @var array
+     */
     private $users = [];
 
     /**
@@ -23,7 +29,7 @@ class UsersJsonReponse extends JsonReponse
         return 'users';
     }
 
-    protected function getBody() {
+    protected function getBody(): array {
         return ['action' => $this->action, 'users' => $this->users];
     }
 

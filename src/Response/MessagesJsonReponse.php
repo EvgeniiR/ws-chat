@@ -8,6 +8,9 @@ use App\Helper\PurifierHelper;
 
 class MessagesJsonReponse extends JsonReponse
 {
+    /**
+     * @var array
+     */
     private $messages = [];
 
     protected function getType(): string {

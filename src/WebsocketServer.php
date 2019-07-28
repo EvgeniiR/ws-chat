@@ -56,13 +56,13 @@ class WebsocketServer
 
         $this->ws = new Server('0.0.0.0', 9502);
 
-        $this->ws->on('open', function ($ws, $request) {
+        $this->ws->on('open', function ($ws, Request $request): void {
             $this->onConnection($request);
         });
-        $this->ws->on('message', function ($ws, $frame) {
+        $this->ws->on('message', function ($ws, Request $frame): void  {
             $this->onMessage($frame);
         });
-        $this->ws->on('close', function ($ws, $id) {
+        $this->ws->on('close', function ($ws, $id): void  {
             $this->onClose($id);
         });
         $this->ws->on('workerStart', function (Server $ws) {
@@ -75,7 +75,7 @@ class WebsocketServer
     /**
      * @param Server $ws
      */
-    private function onWorkerStart(Server $ws) {
+    private function onWorkerStart(Server $ws): void {
         $this->initAsyncRepositories();
 
         $ws->tick(self::PING_DELAY_MS, function () use ($ws) {
@@ -88,14 +88,14 @@ class WebsocketServer
     /**
      * Async repositories must be initialized after master process
      */
-    private function initAsyncRepositories() {
+    private function initAsyncRepositories(): void {
         $this->messagesRepository = new MessagesRepository();
     }
 
     /**
      * Repositories that must be initialized in master process
      */
-    private function initRepositories() {
+    private function initRepositories(): void {
         $this->usersRepository = new UsersRepository();
     }
 
@@ -103,7 +103,7 @@ class WebsocketServer
      * Client connected
      * @param Request $request
      */
-    private function onConnection(Request $request) {
+    private function onConnection(Request $request): void {
         $messagesResponse = new MessagesJsonReponse();
 
         foreach ($this->messagesRepository->getAll() as $message) {
@@ -124,7 +124,7 @@ class WebsocketServer
     /**
      * @param $frame
      */
-    private function onMessage($frame) {
+    private function onMessage($frame): void {
         echo 'We recieve: ';
         print_r($frame);
 
@@ -148,7 +148,7 @@ class WebsocketServer
         }
     }
 
-    public function processLoginRequest(int $userId, $data) {
+    public function processLoginRequest(int $userId, $data): void {
         if( ! isset($data->username) ) {
             $this->ws->push($userId, (new ErrorJsonReponse('Failed to process request. Can`t parse username'))->getJson());
             return;
@@ -157,7 +157,7 @@ class WebsocketServer
         $this->registerNewUser($loginRequest);
     }
 
-    public function processMessageRequest(int $userId, $data) {
+    public function processMessageRequest(int $userId, $data): void {
         if( ! isset($data->message) ) {
             $this->ws->push($userId, (new ErrorJsonReponse('Failed to process request. Can`t parse message'))->getJson());
             return;
@@ -169,7 +169,7 @@ class WebsocketServer
     /**
      * @param $id
      */
-    private function onClose(int $id) {
+    private function onClose(int $id): void {
         $user = $this->usersRepository->get($id);
         foreach ($this->ws->connections as $userId) {
             $response =
@@ -185,14 +185,14 @@ class WebsocketServer
     /**
      * @param int $id
      */
-    private function returnUnauthorized(int $id) {
+    private function returnUnauthorized(int $id): void {
         $this->ws->push($id, (new ErrorJsonReponse('Unauthorized!'))->getJson());
     }
 
     /**
      * @param MessageRequest $messageRequest
      */
-    function processMessage(MessageRequest $messageRequest) {
+    function processMessage(MessageRequest $messageRequest): void {
         $userId = $messageRequest->getUserId();
         $message = $messageRequest->getMessage();
         if (!$this->requestsLimiter->checkIsRequestAllowed($userId)) {
@@ -229,7 +229,7 @@ class WebsocketServer
     /**
      * @param LoginRequest $loginRequest
      */
-    private function registerNewUser(LoginRequest $loginRequest) {
+    private function registerNewUser(LoginRequest $loginRequest): void {
         $id = $loginRequest->getUserId();
         $username = PurifierHelper::purify((string)$loginRequest->getUsername());
         if ($user = $this->usersRepository->get($id) !== false) {
