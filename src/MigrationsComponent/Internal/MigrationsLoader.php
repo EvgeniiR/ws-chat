@@ -28,10 +28,6 @@ class MigrationsLoader
         $migrationFiles = [];
         $scandir = scandir($this->migrationsFolderPath);
         foreach (array_diff($scandir, ['.', '..']) as $filename) {
-            /**
-             * @psalm-var class-string<Migration>
-             * @var Migration $fullClassName
-             */
             $fullClassName = $this->getFullClassName($filename);
             $migrationFiles[$fullClassName::currentVersion()] = $fullClassName;
         }
@@ -51,6 +47,7 @@ class MigrationsLoader
     }
 
     /**
+     * @psalm-return class-string<Migration>
      * @throws MigratorException
      */
     private function getFullClassName(string $migrationFileName): string
@@ -60,8 +57,13 @@ class MigrationsLoader
         if(!isset($matches[1])) {
             throw new MigratorException('Incorrect migration filename');
         }
-        $className = $matches[1];
-        return $migrationsNamespace . '\\' . $className;
+        $className = $migrationsNamespace . '\\' . $matches[1];
+        
+        if (!class_exists($className) || !is_a($className, Migration::class, true)) {
+            throw new \UnexpectedValueException('Class ' . $className . ' should exist');
+        }
+        
+        return $className;
     }
 
     private function isMigrationFile(string $filename): bool
