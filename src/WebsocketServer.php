@@ -5,7 +5,6 @@ namespace App;
 use App\Helper\PurifierHelper;
 use App\Helper\RequestLimiter;
 use App\Helper\SpamFilter;
-use App\Message;
 use App\Repository\MessagesRepository;
 use App\Repository\UsersRepository;
 use App\Request\LoginRequest;
@@ -14,8 +13,8 @@ use App\Response\ErrorJsonReponse;
 use App\Response\LoginJsonReponse;
 use App\Response\MessagesJsonReponse;
 use App\Response\UsersJsonReponse;
-use App\User;
 use Swoole\Http\Request;
+use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
@@ -59,7 +58,7 @@ class WebsocketServer
         $this->ws->on('open', function ($ws, Request $request): void {
             $this->onConnection($request);
         });
-        $this->ws->on('message', function ($ws, Request $frame): void  {
+        $this->ws->on('message', function ($ws, Frame $frame): void  {
             $this->onMessage($frame);
         });
         $this->ws->on('close', function ($ws, $id): void  {
