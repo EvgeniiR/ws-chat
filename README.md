@@ -7,10 +7,15 @@ For using on local machine:
    cp ./docker/env-example ./docker/.env and configure it.
 4. cd docker; docker-compose build && docker-compose up -d
 5. docker exec -it ws_chat_workspace bash
+
    npm install
+  
    composer install
+   
    php bin/console app:database:create
+   
    php bin/console app:migration:migrate (Enter nothing when it`ll ask about the version)
    
-   (May be someday I will automate this process)
    
+   (May be someday I will automate this process)
+  
