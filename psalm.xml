@@ -15,7 +15,72 @@
     </projectFiles>
 
     <stubs>
-        <file name="swoole-stubs.php" />
+        <file name="vendor/swoole/ide-helper/output/constants.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Exception.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Table"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Table/Row.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/WebSocket"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/WebSocket/Frame.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/WebSocket/CloseFrame.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/WebSocket/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Redis"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Redis/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Error.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Process.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/ExitException.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http2"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http2/Request.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http2/Response.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Server"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Server/Port.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Server/Task.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Atomic"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Atomic/Long.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Runtime.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http/Request.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Http/Response.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Buffer.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Atomic.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Table.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Lock.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Process"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Process/Pool.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Context.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/MySQL.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Redis.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http2"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http2/Client"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http2/Client/Exception.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http2/Client.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/MySQL"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/MySQL/Exception.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/MySQL/Statement.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http/Server.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http/Client"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http/Client/Exception.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Http/Client.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Socket.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Socket"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Socket/Exception.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Channel.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Iterator.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Client.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Coroutine/Scheduler.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Connection"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Connection/Iterator.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Client.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Event.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Timer"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Timer/Iterator.php"/>
+        <file name="vendor/swoole/ide-helper/output/namespace/Timer.php"/>
+        <file name="vendor/swoole/ide-helper/output/functions.php"/>
     </stubs>
 
     <issueHandlers>
