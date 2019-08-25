@@ -2,6 +2,8 @@
 
 namespace App\MigrationsComponent\Internal;
 
+use LogicException;
+
 class SchemaUpdater
 {
     /**
@@ -48,7 +50,7 @@ class SchemaUpdater
 
 
         if ($requiredVersion > $currentVersion) {
-            $migrationsToUp = array_filter($migrations, function (int $version) use ($currentVersion, $requiredVersion) {
+            $migrationsToUp = array_filter($migrations, static function (int $version) use ($currentVersion, $requiredVersion) {
                 return ($version > $currentVersion && $version <= $requiredVersion);
             }, ARRAY_FILTER_USE_KEY);
 
@@ -64,7 +66,7 @@ class SchemaUpdater
         }
 
         if ($requiredVersion < $currentVersion) {
-            $migrationsToRevert = array_filter($migrations, function (int $version) use ($currentVersion, $requiredVersion) {
+            $migrationsToRevert = array_filter($migrations, static function (int $version) use ($currentVersion, $requiredVersion) {
                 return ($version <= $currentVersion && $version > $requiredVersion);
             }, ARRAY_FILTER_USE_KEY);
 
@@ -78,5 +80,7 @@ class SchemaUpdater
             }
             return MigratorResultText::SUCCESS;
         }
+
+        throw new LogicException('Something went wrong.');
     }
 }

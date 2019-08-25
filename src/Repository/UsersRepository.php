@@ -4,6 +4,7 @@ namespace App\Repository;
 
 
 use App\User;
+use Swoole\Table;
 use swoole_table;
 
 class UsersRepository
@@ -69,7 +70,7 @@ class UsersRepository
             $this->users_table->destroy();
         }
         $this->users_table = new swoole_table(131072);
-        $this->users_table->column('username', swoole_table::TYPE_STRING, 100);
+        $this->users_table->column('username', Table::TYPE_STRING, 100);
         $this->users_table->create();
     }
 }
