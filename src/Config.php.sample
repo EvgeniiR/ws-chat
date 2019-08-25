@@ -5,17 +5,17 @@ use PDO;
 
 class Config
 {
-    const OPT = array(
+    public const OPT = array(
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => TRUE,
     );
 
-    const HOST = 'db';
-    const PORT = 3306;
-    const USER = 'test';
-    const PASSWORD = 'test';
-    const DATABASE = 'ws-chat';
+    public const HOST = 'db';
+    public const PORT = 3306;
+    public const USER = 'test';
+    public const PASSWORD = 'test';
+    public const DATABASE = 'ws-chat';
 
-    const SRCDIR = __DIR__;
+    public const SRCDIR = __DIR__;
 }
