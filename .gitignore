@@ -1,5 +1,5 @@
 lsp
-/.idea
+.idea
 /vendor
 app/DBConfig.php
 /node_modules
