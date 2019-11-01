@@ -17,6 +17,7 @@ For using on local machine:
    
    php bin/console app:migration:migrate (Enter nothing when it`ll ask about the version)
    
+   npm run production
    
    (May be someday I will automate this process)
   
