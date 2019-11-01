@@ -5,7 +5,7 @@
 #--------------------------------------------------------------------------
 #
 
-FROM phusion/baseimage:latest
+FROM phusion/baseimage:0.11
 
 LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
