@@ -1,7 +1,7 @@
 version: '3'
 services:
   ws:
-    build: build/workspace
+    build: build/php
     container_name: ws_chat_ws
     expose:
       - '9502'
