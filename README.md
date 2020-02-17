@@ -1,4 +1,6 @@
-<h3>This repository is deprecated and will not be supported by a bunch of reasons, changing my views on solving such problems, poor code quality and the availability of documentation for the framework</h3>
+<h3>This repository is deprecated and will not be supported by a bunch of reasons, including changing my views on solving such problems, poor code quality and the availability of documentation for the Swoole framework</h3>
+
+<br/>
 
 Online chat on websocket using Swoole (https://www.swoole.co.uk/)
 
