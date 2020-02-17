@@ -1,3 +1,5 @@
+<h3>**This repository is deprecated and will not be supported by a bunch of reasons, changing my views on solving such problems, poor code quality and the availability of documentation for the framework **</h3>
+
 Online chat on websocket using Swoole (https://www.swoole.co.uk/)
 
 For using on local machine:
